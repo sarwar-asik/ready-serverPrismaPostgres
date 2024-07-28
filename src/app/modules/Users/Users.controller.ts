@@ -1,14 +1,16 @@
+// import { Users } from '@prisma/client';
 
 import { Request, Response } from "express";
+import httpStatus from "http-status";
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
-import httpStatus from "http-status";
+import { UsersService } from "./Users.service";
 
 const insertDB = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
   const result = await UsersService.insertDB(data)
 
-  sendResponse<Users>(res, {
+  sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
     message: 'Successfully Users',

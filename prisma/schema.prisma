@@ -16,3 +16,4 @@ model test{
   name String 
   user Int
 }
+
