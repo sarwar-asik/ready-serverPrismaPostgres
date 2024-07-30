@@ -4,6 +4,7 @@ import httpStatus from 'http-status';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 
 import cookieParser from 'cookie-parser';
+import router from './app/routes';
 import config from './config';
 
 const app: Application = express();
@@ -31,13 +32,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', (req: Request, res: Response) => {
   // console.log(req?.body,"https//:localhost:5000");
   res.json({
-    status:httpStatus.OK,
-    message:'sarwar-server  is running on http://localhost:5000'
+    status: httpStatus.OK,
+    message: `sarwar-server  is running on http://localhost:${config.port}`,
   });
 });
 
-
-// app.use('/api/v1', routes);
+app.use('/api/v1', router);
 
 //global error handler
 app.use(globalErrorHandler);
