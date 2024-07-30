@@ -1,3 +1,4 @@
+import { Users } from '@prisma/client';
 /* eslint-disable no-var */
 /* eslint-disable no-console */
 import httpStatus from 'http-status';
@@ -13,13 +14,10 @@ import { Secret } from 'jsonwebtoken';
 import 'colors';
 import { jwtHelpers } from '../../../helpers/jwtHelpers';
 import config from '../../../config';
-import { User } from '../USER/user.model';
-import { IUser } from '../USER/user.interface';
-
 const authLoginServices = async (payload: ILogin): Promise<ILoginResponse> => {
-  const { phoneNumber, password } = payload;
+  const { phone_number, password } = payload;
 
-  const isUserExist = await User.isUserExistsMethod(phoneNumber);
+  const isUserExist = await Users.findUnique({ where: { phone_number } });
   // console.log(isUserExist,"isUserExits");
 
   if (!isUserExist) {
@@ -28,7 +26,7 @@ const authLoginServices = async (payload: ILogin): Promise<ILoginResponse> => {
 
   if (
     isUserExist.password &&
-    !(await User.isPasswordMatchMethod(password, isUserExist?.password))
+    !(await bcrypt)
   ) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Password is not correct');
   }
