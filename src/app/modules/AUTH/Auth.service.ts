@@ -70,13 +70,6 @@ const authLogin = async (payload: {
   }
 
   //   jwt part ///
-console.log(
-  isUserExist,
-  'isUserExist',
-  config.jwt.secret as Secret,
-  config.jwt.expires_in as string
-);
-  console.log(config.jwt.expires_in, ' config.jwt.expires_in');
   const accessToken = jwtHelpers.createToken(
     {
       email,
