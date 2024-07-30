@@ -14,6 +14,11 @@
             "date": 1722363410788,
             "name": "/home/sarwar/WEB/Cloned/ready-serverPrismaPostgres/logs/winston/successes/phu-2024-31-07-00-success.log",
             "hash": "83ab39d0535dffa888e4aeda3a13958de082be0d75546b212b0e64f94140bbaa"
+        },
+        {
+            "date": 1722366850807,
+            "name": "/home/sarwar/WEB/Cloned/ready-serverPrismaPostgres/logs/winston/successes/phu-2024-31-07-01-success.log",
+            "hash": "a96ef5190b818e22a14e12d84478d243c794afc63f0a3048bc2e39137eaae2cf"
         }
     ],
     "hashType": "sha256"

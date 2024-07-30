@@ -28,15 +28,6 @@ app.use(cookieParser());
 //parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use('/', (req: Request, res: Response) => {
-  // console.log(req?.body,"https//:localhost:5000");
-  res.json({
-    status: httpStatus.OK,
-    message: `sarwar-server  is running on http://localhost:${config.port}`,
-  });
-});
-
 app.use('/api/v1', router);
 
 //global error handler
@@ -57,4 +48,11 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+app.use('/', (req: Request, res: Response) => {
+  // console.log(req?.body,"https//:localhost:5000");
+  res.json({
+    status: httpStatus.OK,
+    message: `sarwar-server  is running on http://localhost:${config.port}`,
+  });
+});
 export default app;
