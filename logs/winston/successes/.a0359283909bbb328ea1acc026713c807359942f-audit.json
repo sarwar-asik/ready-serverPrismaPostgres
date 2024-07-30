@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/sarwar/WEB/Cloned/ready-serverPrismaPostgres/logs/winston/successes/.a0359283909bbb328ea1acc026713c807359942f-audit.json",
+    "files": [
+        {
+            "date": 1722320912603,
+            "name": "/home/sarwar/WEB/Cloned/ready-serverPrismaPostgres/logs/winston/successes/phu-2024-30-07-12-success.log",
+            "hash": "7368bd2d6e6d6e71f391c3e63bbaea3ee2550411205c669c8ac94356310915ff"
+        }
+    ],
+    "hashType": "sha256"
+}

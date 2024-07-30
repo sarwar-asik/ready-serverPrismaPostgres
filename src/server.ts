@@ -1,34 +1,41 @@
-import "colors";
+import 'colors';
 import { Server } from 'http';
 import app from './app';
 import config from './config';
-import { errorlogger } from "./shared/logger";
-
+import { errorlogger } from './shared/logger';
 
 async function main() {
-
   const server: Server = app.listen(config.port, () => {
-    console.log(`Server running on port http://localhost:${config.port}`.green.underline.bold);
+    console.log(
+      `Server running on port http://localhost:${config.port}`.green.underline
+        .bold
+    );
   });
-
-  const exitHandler = () => {
-
+  const exitHandler = (error?: unknown) => {
     if (server) {
       server.close(() => {
-        config.env === 'production'
-          ? errorlogger.error(error)
-          : console.log(error);
+        if (error) {
+          logError(error);
+        }
         process.exit(1);
       });
+    } else {
+      process.exit(1);
     }
-    process.exit(1);
+  };
+
+  const logError = (error: unknown) => {
+    if (config.env === 'production') {
+      errorlogger.error(error);
+    } else {
+      console.error('Error:', error);
+    }
   };
 
   const unexpectedErrorHandler = (error: unknown) => {
-    config.env === 'production'
-    ? errorlogger.error(error)
-    : console.log('unexpectedErrorHandler is detected ......', error);
-    exitHandler();
+    console.error('Unexpected error detected:', error);
+    logError(error);
+    exitHandler(error);
   };
 
   process.on('uncaughtException', unexpectedErrorHandler);
