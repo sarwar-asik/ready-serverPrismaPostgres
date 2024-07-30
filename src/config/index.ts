@@ -28,5 +28,5 @@ export default {
     FromEmail: process.env.FROMEMAIL,
     appPassword: process.env.APPPASSWORD,
   },
-  frontend_url: process.env.FRONTEND_URL
+  frontend_url: process.env.FRONTEND_URL,
 };
