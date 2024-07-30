@@ -20,11 +20,12 @@ const signUp = async (
 
   // console.log("🚀 ~ file: Auth.service.ts:14 ~ userData:", userData)
 
-  userData.role="admin"
+  // userData.role="user"
 
   const result = await prisma.user.create({
     data: userData,
   });
+
   const newAccessToken = jwtHelpers.createToken(
     {
       email: userData.email,
@@ -69,7 +70,6 @@ const authLogin = async (payload: {
   }
 
   //   jwt part ///
-
   const accessToken = jwtHelpers.createToken(
     {
       email,
@@ -79,6 +79,7 @@ const authLogin = async (payload: {
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
   );
+
   const refreshToken = jwtHelpers.createToken(
     {
       email,

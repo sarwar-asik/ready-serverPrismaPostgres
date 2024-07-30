@@ -13,7 +13,7 @@ CREATE TABLE "test" (
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" TEXT,
     "first_nmae" TEXT,
     "last_name" TEXT,
     "password" TEXT NOT NULL,

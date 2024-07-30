@@ -10,6 +10,7 @@ import { AuthService } from './Auth.service';
 const SignUp = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
   const result = await AuthService.signUp(data);
+  
 
   const cookieOptions = {
     secure: config.env === 'production',
