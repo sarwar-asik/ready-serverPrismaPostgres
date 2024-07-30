@@ -19,24 +19,34 @@ const logger_1 = require("./shared/logger");
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const server = app_1.default.listen(config_1.default.port, () => {
-            console.log(`Server running on port http://localhost:${config_1.default.port}`.green.underline.bold);
+            console.log(`Server running on port http://localhost:${config_1.default.port}`.green.underline
+                .bold);
         });
-        const exitHandler = () => {
+        const exitHandler = (error) => {
             if (server) {
                 server.close(() => {
-                    config_1.default.env === 'production'
-                        ? logger_1.errorlogger.error(error)
-                        : console.log(error);
+                    if (error) {
+                        logError(error);
+                    }
                     process.exit(1);
                 });
             }
-            process.exit(1);
+            else {
+                process.exit(1);
+            }
+        };
+        const logError = (error) => {
+            if (config_1.default.env === 'production') {
+                logger_1.errorlogger.error(error);
+            }
+            else {
+                console.error('Error:', error);
+            }
         };
         const unexpectedErrorHandler = (error) => {
-            config_1.default.env === 'production'
-                ? logger_1.errorlogger.error(error)
-                : console.log('unexpectedErrorHandler is detected ......', error);
-            exitHandler();
+            console.error('Unexpected error detected:', error);
+            logError(error);
+            exitHandler(error);
         };
         process.on('uncaughtException', unexpectedErrorHandler);
         process.on('unhandledRejection', unexpectedErrorHandler);

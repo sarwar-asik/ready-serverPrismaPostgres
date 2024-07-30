@@ -1,13 +1,15 @@
 import { z } from 'zod';
 const signUp = z.object({
   body: z.object({
-    name: z.string({
-      required_error: 'name is Required.',
-    }),
+    name: z
+      .string({
+        required_error: 'name is Required.',
+      })
+      .optional(),
     password: z.string({ required_error: 'password is Required.' }),
     email: z.string({ required_error: 'email is Required.' }),
- 
-    img: z.string({ required_error: 'img is Required.' }),
+
+    img: z.string({ required_error: 'img is Required.' }).optional(),
   }),
 });
 
@@ -63,5 +65,5 @@ export const AuthValidation = {
   changePassword,
   forgotPassword,
   resetPassword,
-  refreshTokenZodSchema
+  refreshTokenZodSchema,
 };
