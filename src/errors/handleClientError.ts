@@ -30,6 +30,16 @@ const handleClientError = (error:Prisma.PrismaClientKnownRequestError ) => {
     }
 
   }
+  else if (error.code === "P2002") {
+    // console.log('sssssssssss',error.message,"eeeeeeeeeeee")
+    message = "The value must be unique. Violation of unique constraint failed (handleClientError.ts)";
+    errors = [
+      {
+        path: "",
+        message:error.message,
+      },
+    ];
+  }
 
   return {
     statusCode,

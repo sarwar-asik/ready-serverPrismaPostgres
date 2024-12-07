@@ -1,0 +1,25 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\sarwa\\WEB\\JOB\\Sparktech\\Projects\\MapPoint\\map-points-backend\\logs\\winston\\errors\\.bf588ac3383203e8aa5d2f4b7bcd370dcfa45c15-audit.json",
+    "files": [
+        {
+            "date": 1733569169949,
+            "name": "C:\\Users\\sarwa\\WEB\\JOB\\Sparktech\\Projects\\MapPoint\\map-points-backend\\logs\\winston\\errors\\phu-2024-07-12-16-error.log",
+            "hash": "f00e9bf5ae2b4c9a288a4954d6125b01119878372034321139be2de5a599ad71"
+        },
+        {
+            "date": 1733569294800,
+            "name": "C:\\Users\\sarwa\\WEB\\JOB\\Sparktech\\Projects\\MapPoint\\map-points-backend\\logs\\winston\\errors\\phu-2024-07-12-17-error.log",
+            "hash": "07a84062604d1b6062270177aa008a07ac116b9ff1955d1da1eb1437db282d97"
+        },
+        {
+            "date": 1733573629968,
+            "name": "C:\\Users\\sarwa\\WEB\\JOB\\Sparktech\\Projects\\MapPoint\\map-points-backend\\logs\\winston\\errors\\phu-2024-07-12-18-error.log",
+            "hash": "e8c577885eae701d377f56383a3ad88c5e3b1afe4cc5ccb12c06ea944209b42f"
+        }
+    ],
+    "hashType": "sha256"
+}
