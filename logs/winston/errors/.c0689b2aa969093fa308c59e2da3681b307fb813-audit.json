@@ -1,0 +1,25 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/sarwar/WEB/Cloned/ready-serverPrismaPostgres/logs/winston/errors/.c0689b2aa969093fa308c59e2da3681b307fb813-audit.json",
+    "files": [
+        {
+            "date": 1722320912606,
+            "name": "/home/sarwar/WEB/Cloned/ready-serverPrismaPostgres/logs/winston/errors/phu-2024-30-07-12-error.log",
+            "hash": "9d9e291ec4793ff32fb18c6ff621dd53bf19f38f91c6329f8521f3f82572e1c8"
+        },
+        {
+            "date": 1722363410793,
+            "name": "/home/sarwar/WEB/Cloned/ready-serverPrismaPostgres/logs/winston/errors/phu-2024-31-07-00-error.log",
+            "hash": "76341cd1c40081f0a509f31078fec2ef35f2d24709c29cb2fda6f9e6dcbbb975"
+        },
+        {
+            "date": 1722366850811,
+            "name": "/home/sarwar/WEB/Cloned/ready-serverPrismaPostgres/logs/winston/errors/phu-2024-31-07-01-error.log",
+            "hash": "6b823c587e5789a3d5297f3692a0470576e0438c3b544fd669a8d0256db908f4"
+        }
+    ],
+    "hashType": "sha256"
+}
