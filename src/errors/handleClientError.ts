@@ -5,7 +5,7 @@ import { IGenericErrorMessage } from '../interfaces/error';
 const handleClientError = (error:Prisma.PrismaClientKnownRequestError ) => {
  let errors: IGenericErrorMessage[] = [];
 
-  let message =""
+  let message = error.message ??"Prisma Client Error (handleClientError.ts)"
   const statusCode = 400;
 
   if(error.code === "P2025"){
