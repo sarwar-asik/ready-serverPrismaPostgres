@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 const signUp = z.object({
   body: z.object({
     full_name: z
@@ -16,7 +17,7 @@ const signUp = z.object({
         required_error: 'Email is required',
       })
       .email('Invalid email format'),
-      self_pronoun: z
+    self_pronoun: z
       .enum(['he', 'she', 'they'], {
         required_error: 'Self identity must be either "he", "she", or "they"',
       })
@@ -45,6 +46,7 @@ const loginUser = z.object({
     }),
   }),
 });
+
 const changePassword = z.object({
   body: z.object({
     oldPassword: z.string({
@@ -55,6 +57,7 @@ const changePassword = z.object({
     }),
   }),
 });
+
 const forgotPassword = z.object({
   body: z.object({
     email: z.string({
@@ -62,6 +65,7 @@ const forgotPassword = z.object({
     }),
   }),
 });
+
 const resetPassword = z.object({
   body: z.object({
     email: z.string({
@@ -81,6 +85,17 @@ const refreshTokenZodSchema = z.object({
   }),
 });
 
+const verifySignUpOtp = z.object({
+  body: z.object({
+    email: z.string({
+      required_error: 'email is required',
+    }).email('Invalid email format'),
+    otp: z.string({
+      required_error: 'OTP is required',
+    }),
+  }),
+});
+
 export const AuthValidation = {
   signUp,
   loginUser,
@@ -88,4 +103,5 @@ export const AuthValidation = {
   forgotPassword,
   resetPassword,
   refreshTokenZodSchema,
+  verifySignUpOtp,
 };

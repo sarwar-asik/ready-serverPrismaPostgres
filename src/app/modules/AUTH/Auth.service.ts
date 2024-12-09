@@ -9,9 +9,9 @@ import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import { senMailer } from '../../../helpers/sendMailer';
 import { resetPasswordHTML, resetPasswordSubject } from './resetPassword';
-import { createActivationCode } from './Auth.helper';
+import { checkIsValidOTP, createActivationCode, } from './Auth.helper';
 import { sendEmailFunc } from '../../../helpers/mail/sendMail';
-import { registrationSuccessEmailBody } from '../../../helpers/mail/opt-template';
+import { registrationSuccessEmailBody } from '../../../helpers/mail/otp-template';
 
 const signUpUserDB = async (
   userData:User & any
@@ -63,7 +63,60 @@ const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
   }
 };
 
-const authLogin = async (payload: {
+// old code
+// const signUp = async (
+//   userData: User
+// ): Promise<{ data: User; accessToken: string }> => {
+//   userData.password = await bcrypt.hash(
+//     userData.password,
+//     Number(config.bycrypt_salt_rounds)
+//   );
+
+//   // console.log("🚀 ~ file: Auth.service.ts:14 ~ userData:", userData)
+
+//   // userData.role="user"
+
+//   const result = await prisma.user.create({
+//     data: userData,
+//   });
+
+//   const newAccessToken = jwtHelpers.createToken(
+//     {
+//       email: userData.email,
+//       id: userData.id,
+//       role: userData.role,
+//     },
+//     config.jwt.secret as Secret,
+//     config.jwt.expires_in as string
+//   );
+//   return {
+//     accessToken: newAccessToken,
+//     data: result,
+//   };
+// };
+
+
+const verifySignUpOtpDB = async (email: string, otp: string) => {
+  const isValidOTP = await checkIsValidOTP({ email, code: otp });
+
+  if (!isValidOTP.valid) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'OTP not found or already used');
+  }
+
+  await prisma.user.update({
+    where: {
+      email,
+    },
+    data: {
+      is_verified: true,
+      is_active: true,
+      verify_code: null,
+      verify_expiration: null,
+    },
+  });
+};
+
+const authLoginDB = async (payload: {
   email?: string;
   password: string;
 }): Promise<any> => {
@@ -82,7 +135,14 @@ const authLogin = async (payload: {
   // console.log(isUserExist);
 
   if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User does not match');
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }else{
+    if (!isUserExist?.is_active) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User is not active');
+    }
+    if (!isUserExist?.is_verified) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User is not verified');
+    }
   }
 
   const isPasswordMatch = await bcrypt.compare(password, isUserExist?.password);
@@ -97,6 +157,7 @@ const authLogin = async (payload: {
       email,
       role: isUserExist.role,
       id: isUserExist.id,
+      user_name: isUserExist.user_name,
     },
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
@@ -107,6 +168,7 @@ const authLogin = async (payload: {
       email,
       role: isUserExist.role,
       id: isUserExist.id,
+      user_name: isUserExist.user_name,
     },
     config.jwt.refresh_secret as Secret,
     config.jwt.refresh_expires_in as string
@@ -157,7 +219,7 @@ const refreshToken = async (token: string): Promise<any> => {
   };
 };
 
-const changePassword = async (
+const changePasswordDB = async (
   authUser: any,
   passwordData: any
 ): Promise<any> => {
@@ -280,9 +342,10 @@ const resetPassword = async (
 };
 export const AuthService = {
   signUpUserDB,
-  authLogin,
-  changePassword,
+  authLoginDB,
+  changePasswordDB,
   forgotPassword,
   resetPassword,
   refreshToken,
+  verifySignUpOtpDB
 };

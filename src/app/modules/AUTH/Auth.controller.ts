@@ -23,12 +23,50 @@ export const signUpUser = catchAsync(
   }
 );
 
+export const verifySignUpOtp = catchAsync(
+  async (req: Request, res: Response) => {
+    const { email, otp } = req.body;
+    const result = await AuthService.verifySignUpOtpDB(email, otp);
+
+    sendResponse(res, {
+      success: true,
+      message: 'OTP verified successfully',
+      statusCode: 200,
+      data: result,
+    });
+  }
+);
+
+// const SignUp = catchAsync(async (req: Request, res: Response) => {
+//   const data = req.body;
+//   const result = await AuthService.signUp(data);
+  
+
+//   const cookieOptions = {
+//     secure: config.env === 'production',
+//     httpOnly: true,
+//   };
+
+//   if (result) {
+//     res.cookie(tokenName, result?.accessToken, cookieOptions);
+//     // eslint-disable-next-line no-unused-vars
+//     const { password, ...userData } = result.data;
+
+//     sendResponse<Partial<User>>(res, {
+//       statusCode: httpStatus.CREATED,
+//       success: true,
+//       message: 'Successfully SignUp',
+//       data: userData,
+//     });
+//   }
+// });
+
 const login = catchAsync(async (req: Request, res: Response) => {
   const { ...loginData } = req.body;
 
   // console.log(loginData,"asdfsd");
 
-  const result = await AuthService.authLogin(loginData);
+  const result = await AuthService.authLoginDB(loginData);
 
   const { refreshToken, ...others } = result;
 
@@ -50,7 +88,7 @@ const login = catchAsync(async (req: Request, res: Response) => {
 const changePassword = catchAsync(async (req: Request, res: Response) => {
   const authUser = req.user as any;
   const passData = req.body;
-  const result = await AuthService.changePassword(authUser, passData);
+  const result = await AuthService.changePasswordDB(authUser, passData);
 
   sendResponse<Partial<User>>(res, {
     statusCode: httpStatus.OK,
@@ -104,11 +142,13 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 export const AuthController = {
   signUpUser,
   login,
   changePassword,
   forgotPassword,
+  verifySignUpOtp,
   resetPassword,
   refreshToken,
 };

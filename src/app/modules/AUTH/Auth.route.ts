@@ -11,6 +11,13 @@ router.post(
   validateRequest(AuthValidation.signUp),
   AuthController.signUpUser
 );
+
+router.post(
+  '/verify-signup-otp',
+  validateRequest(AuthValidation.verifySignUpOtp),
+  AuthController.verifySignUpOtp
+);
+
 router.post(
   '/login',
   validateRequest(AuthValidation.loginUser),
