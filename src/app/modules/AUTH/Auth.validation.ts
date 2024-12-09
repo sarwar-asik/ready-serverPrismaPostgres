@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 const signUp = z.object({
-  body: z.object({
+  body: 
+  z.object({
     full_name: z
       .string({
         required_error: 'Full name is required',

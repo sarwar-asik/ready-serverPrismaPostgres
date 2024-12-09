@@ -7,11 +7,11 @@ import prisma from '../../../shared/prisma';
 import bcrypt from 'bcrypt';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
-import { senMailer } from '../../../helpers/sendMailer';
-import { resetPasswordHTML, resetPasswordSubject } from './resetPassword';
-import { checkIsValidOTP, createActivationCode, } from './Auth.helper';
-import { sendEmailFunc } from '../../../helpers/mail/sendMail';
 import { registrationSuccessEmailBody } from '../../../helpers/mail/otp-template';
+import { sendEmailFunc } from '../../../helpers/mail/sendMail';
+import { senMailer } from '../../../helpers/sendMailer';
+import { checkIsValidOTP, createActivationCode, } from './Auth.helper';
+import { resetPasswordHTML, resetPasswordSubject } from './resetPassword';
 
 const signUpUserDB = async (
   userData:User & any

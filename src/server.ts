@@ -4,6 +4,8 @@ import app from './app';
 import config from './config';
 import { errorlogger } from './shared/logger';
 import prisma from './shared/prisma';
+import { createDirectories } from './utils/runFileUploadFolder';
+import { seedSuperAdmin } from './utils/seedSuperAdmin';
 
 async function main() {
   const server: Server = app.listen(config.port, () => {
@@ -11,6 +13,8 @@ async function main() {
       `Server running on port http://localhost:${config.port}`.green.underline
         .bold
     );
+    createDirectories();
+      seedSuperAdmin()
   });
   const exitHandler = (error?: unknown) => {
     if (server) {
