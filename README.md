@@ -124,6 +124,29 @@ npm run dev
 - Secure cookie handling
 - Global error handling middleware
 
+## 🔄 CI/CD with GitHub Actions
+
+This project uses GitHub Actions for continuous integration and deployment. Our workflow automatically:
+
+- Builds the application
+- Runs tests
+- Checks code quality
+- Deploys to production (when merging to main branch)
+
+### Example Workflow Run:
+
+![GitHub Actions Workflow](logs/git-actions.png)
+
+### Workflow Features:
+
+- Automatic builds on push and pull requests
+- Node.js environment setup
+- Dependency caching for faster builds
+- Environment variable handling
+- Deployment automation
+
+To view detailed workflow configurations, check `.github/workflows/build-deploy.yml`.
+
 ## 🤝 Contributing
 
 1. Fork the repository
