@@ -32,7 +32,7 @@ const signUp = z.object({
         required_error: 'Password is required',
       })
       .min(6, 'Password must be at least 6 characters long')
-      .max(20, 'Password must not exceed 20 characters'),
+      .max(30, 'Password must not exceed 20 characters'),
   }),
 });
 
@@ -96,6 +96,14 @@ const verifySignUpOtp = z.object({
   }),
 });
 
+const resendOtp = z.object({
+  body: z.object({
+    email: z.string({
+      required_error: 'Email is required',
+    }).email('Invalid email format'),
+  }),
+});
+
 export const AuthValidation = {
   signUp,
   loginUser,
@@ -104,4 +112,5 @@ export const AuthValidation = {
   resetPassword,
   refreshTokenZodSchema,
   verifySignUpOtp,
+  resendOtp,
 };

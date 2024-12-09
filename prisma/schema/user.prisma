@@ -7,10 +7,11 @@ model User {
   password           String
   self_pronoun       Pronoun?
   profile_img        String?
-  phone_number       String
+  phone_number       String?
   verify_code        String?
   is_verified        Boolean   @default(false)
   verify_expiration  DateTime?
+  pass_changed_at    DateTime?
   is_active          Boolean   @default(false)
   fcm_token          String?
   app_id             String?

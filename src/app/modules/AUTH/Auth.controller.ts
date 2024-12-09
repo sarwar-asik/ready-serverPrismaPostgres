@@ -100,7 +100,7 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
 
 const forgotPassword = catchAsync(async (req: Request, res: Response) => {
   const passData = req.body;
-  await AuthService.forgotPassword(passData);
+  await AuthService.forgotPasswordOTP_DB(passData);
 
   sendResponse<Partial<User>>(res, {
     statusCode: httpStatus.OK,
@@ -143,12 +143,25 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+export const resendOtp = catchAsync(async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const result = await AuthService.resendOtpDB(email);
+
+  sendResponse(res, {
+    success: true,
+    message: 'OTP resent successfully',
+    statusCode: httpStatus.OK,
+    data: result,
+  });
+});
+
 export const AuthController = {
   signUpUser,
+  verifySignUpOtp,
   login,
   changePassword,
   forgotPassword,
-  verifySignUpOtp,
   resetPassword,
   refreshToken,
+  resendOtp,
 };

@@ -9,7 +9,7 @@ import prisma from '../../../shared/prisma';
 import { IUserFilterRequest } from './User.interface';
 import { UserSearchableField } from './UserConstant';
 
-const createAdmin = async (data: User): Promise<User> => {
+const createAdmin = async (data: User | any): Promise<User> => {
   const result = await prisma.user.create({
     data,
   });
@@ -87,7 +87,7 @@ const getAllUsers = async (
             [options.sortBy]: options.sortOrder,
           }
         : {
-            createdAt: 'desc',
+            created_at: 'desc',
           },
   });
   const total = await prisma.user.count();
@@ -106,7 +106,7 @@ const updateProfile = async (
     email: string;
     role: string;
   },
-  updateData: Partial<User>
+  updateData: Partial<User | any>
 ): Promise<User | null> => {
   const { email, id } = authUser;
   // console.log(email, 'email...', updateData);
@@ -148,7 +148,7 @@ const getSingleData = async (id: string): Promise<User | null> => {
 
 const updateUser = async (
   id: string,
-  updateData: Partial<User>
+  updateData: Partial<User | any>
 ): Promise<User | null> => {
   // console.log(id,"and",updateData);
   const isSuperAdmin = await getSingleData(id) as any;

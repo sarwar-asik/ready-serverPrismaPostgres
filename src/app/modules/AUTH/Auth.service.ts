@@ -180,6 +180,7 @@ const authLoginDB = async (payload: {
   };
 };
 
+
 const refreshToken = async (token: string): Promise<any> => {
   //verify token
   // invalid token - synchronous
@@ -219,6 +220,39 @@ const refreshToken = async (token: string): Promise<any> => {
   };
 };
 
+const resendOtpDB = async (email: string): Promise<any> => {
+  const isExistUser = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!isExistUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
+  }
+  const activationOTP = createActivationCode();
+   await sendEmailFunc({
+    email: email,
+    subject: 'Activate your Account',
+    html: registrationSuccessEmailBody({
+      name: email,
+      activationCode: activationOTP,
+    }),
+  });
+  // console.log(sendOtpMail, 'sendOtpMail');
+  const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
+  const hashedOTP = await bcrypt.hash(activationOTP, Number(5));
+   await prisma.user.update({
+    where: {
+      email,
+    },
+    data: {
+      verify_code: hashedOTP,
+      verify_expiration: expiryTime,
+    },
+  });
+
+  return {email}
+}
 const changePasswordDB = async (
   authUser: any,
   passwordData: any
@@ -258,13 +292,14 @@ const changePasswordDB = async (
     },
     data: {
       password,
+      pass_changed_at: new Date(),
     },
   });
 
   return updatePass;
 };
 
-const forgotPassword = async (passwordData: any): Promise<any> => {
+const forgotPasswordLink = async (passwordData: any): Promise<any> => {
   console.log('🚀passwordData:', passwordData);
 
   const isUserExist = await prisma.user.findUnique({
@@ -294,6 +329,46 @@ const forgotPassword = async (passwordData: any): Promise<any> => {
   );
 
   return passResetToken;
+};
+
+const forgotPasswordOTP_DB= async (passwordData: {
+  email: string;
+}): Promise<any> => {
+ const user = await prisma.user.findUnique({
+    where: {
+      email: passwordData.email,
+      is_active: true,
+      is_verified: true
+    },
+  });
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User NOt Found');
+  }
+  const activationOTP = createActivationCode();
+
+  await sendEmailFunc({
+    email: user?.email,
+    subject: 'Reset Password',
+    html: registrationSuccessEmailBody({
+      name: user?.email,
+      activationCode: activationOTP,
+    }),
+  });
+
+  const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
+
+  const hashedOTP = await bcrypt.hash(activationOTP, Number(5));
+
+  await prisma.user.update({
+    where: {
+      email: user?.email,
+    },  
+    data: {
+      verify_code: hashedOTP, 
+      verify_expiration: expiryTime,
+    },
+  });
+ 
 };
 
 const resetPassword = async (
@@ -344,8 +419,11 @@ export const AuthService = {
   signUpUserDB,
   authLoginDB,
   changePasswordDB,
-  forgotPassword,
+  forgotPasswordOTP_DB,
+  forgotPasswordLink,
   resetPassword,
   refreshToken,
-  verifySignUpOtpDB
+  verifySignUpOtpDB,
+  resendOtpDB,
+
 };

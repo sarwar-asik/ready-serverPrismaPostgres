@@ -19,6 +19,12 @@ router.post(
 );
 
 router.post(
+  '/resend-otp',
+  validateRequest(AuthValidation.resendOtp),
+  AuthController.resendOtp
+);
+
+router.post(
   '/login',
   validateRequest(AuthValidation.loginUser),
   AuthController.login
