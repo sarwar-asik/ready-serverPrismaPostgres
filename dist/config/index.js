@@ -11,6 +11,7 @@ exports.default = {
     env: process.env.NODE_ENV,
     port: process.env.PORT,
     database_url: process.env.DATABASE_URL,
+    server_name: process.env.SERVER_NAME,
     default_student_pass: process.env.DEFAULT_STUDENT_PASS,
     default_faculty_pass: process.env.DEFAULT_FACULTY_PASS,
     default_admin_pass: process.env.DEFAULT_ADMIN_PASS,
@@ -31,5 +32,14 @@ exports.default = {
         FromEmail: process.env.FROMEMAIL,
         appPassword: process.env.APPPASSWORD,
     },
-    frontend_url: process.env.FRONTEND_URL
+    smtp: {
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        secure: process.env.SMTP_SECURE === 'true',
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+        },
+    },
+    frontend_url: process.env.FRONTEND_URL,
 };

@@ -23,36 +23,58 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthController = void 0;
+exports.AuthController = exports.resendOtp = exports.verifySignUpOtp = exports.signUpUser = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const config_1 = __importDefault(require("../../../config"));
-const jwt_token_1 = require("../../../constants/jwt.token");
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const Auth_service_1 = require("./Auth.service");
-const SignUp = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const data = req.body;
-    const result = yield Auth_service_1.AuthService.signUp(data);
-    const cookieOptions = {
-        secure: config_1.default.env === 'production',
-        httpOnly: true,
-    };
+exports.signUpUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = __rest(req.body, []);
+    // console.log(user, 'from controller=================');
+    const result = yield Auth_service_1.AuthService.signUpUserDB(user);
     if (result) {
-        res.cookie(jwt_token_1.tokenName, result === null || result === void 0 ? void 0 : result.accessToken, cookieOptions);
-        // eslint-disable-next-line no-unused-vars
-        const _a = result.data, { password } = _a, userData = __rest(_a, ["password"]);
         (0, sendResponse_1.default)(res, {
-            statusCode: http_status_1.default.CREATED,
             success: true,
-            message: 'Successfully SignUp',
-            data: userData,
+            message: "sent OTP. Please, verify your email/finger",
+            statusCode: 200,
+            data: result,
         });
     }
 }));
+exports.verifySignUpOtp = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, otp } = req.body;
+    const result = yield Auth_service_1.AuthService.verifySignUpOtpDB(email, otp);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        message: 'OTP verified successfully',
+        statusCode: 200,
+        data: result,
+    });
+}));
+// const SignUp = catchAsync(async (req: Request, res: Response) => {
+//   const data = req.body;
+//   const result = await AuthService.signUp(data);
+//   const cookieOptions = {
+//     secure: config.env === 'production',
+//     httpOnly: true,
+//   };
+//   if (result) {
+//     res.cookie(tokenName, result?.accessToken, cookieOptions);
+//     // eslint-disable-next-line no-unused-vars
+//     const { password, ...userData } = result.data;
+//     sendResponse<Partial<User>>(res, {
+//       statusCode: httpStatus.CREATED,
+//       success: true,
+//       message: 'Successfully SignUp',
+//       data: userData,
+//     });
+//   }
+// });
 const login = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginData = __rest(req.body, []);
     // console.log(loginData,"asdfsd");
-    const result = yield Auth_service_1.AuthService.authLogin(loginData);
+    const result = yield Auth_service_1.AuthService.authLoginDB(loginData);
     const { refreshToken } = result, others = __rest(result, ["refreshToken"]);
     const cookieOption = {
         secure: config_1.default.env === 'production',
@@ -69,7 +91,7 @@ const login = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, 
 const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const authUser = req.user;
     const passData = req.body;
-    const result = yield Auth_service_1.AuthService.changePassword(authUser, passData);
+    const result = yield Auth_service_1.AuthService.changePasswordDB(authUser, passData);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         message: 'Updated your password',
@@ -79,7 +101,7 @@ const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
 }));
 const forgotPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const passData = req.body;
-    yield Auth_service_1.AuthService.forgotPassword(passData);
+    yield Auth_service_1.AuthService.forgotPasswordOTP_DB(passData);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         message: 'Check your email',
@@ -112,11 +134,23 @@ const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         data: result,
     });
 }));
+exports.resendOtp = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    const result = yield Auth_service_1.AuthService.resendOtpDB(email);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        message: 'OTP resent successfully',
+        statusCode: http_status_1.default.OK,
+        data: result,
+    });
+}));
 exports.AuthController = {
-    SignUp,
+    signUpUser: exports.signUpUser,
+    verifySignUpOtp: exports.verifySignUpOtp,
     login,
     changePassword,
     forgotPassword,
     resetPassword,
     refreshToken,
+    resendOtp: exports.resendOtp,
 };

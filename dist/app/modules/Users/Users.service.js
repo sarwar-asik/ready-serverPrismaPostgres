@@ -88,7 +88,7 @@ const getAllUsers = (filters, options) => __awaiter(void 0, void 0, void 0, func
                 [options.sortBy]: options.sortOrder,
             }
             : {
-                createdAt: 'desc',
+                created_at: 'desc',
             },
     });
     const total = yield prisma_1.default.user.count();

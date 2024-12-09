@@ -16,6 +16,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const config_1 = __importDefault(require("../../config"));
 const ApiError_1 = __importDefault(require("../../errors/ApiError"));
 const jwtHelpers_1 = require("../../helpers/jwtHelpers");
+const prisma_1 = __importDefault(require("../../shared/prisma"));
 const auth = (...requiredRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         //get authorization token
@@ -30,6 +31,25 @@ const auth = (...requiredRoles) => (req, res, next) => __awaiter(void 0, void 0,
         // role diye guard korar jnno
         if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
             throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'Forbidden');
+        }
+        const existUser = yield prisma_1.default.user.findUnique({
+            where: {
+                id: verifiedUser.id,
+            },
+        });
+        if (!existUser) {
+            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist');
+        }
+        if (!existUser.is_active) {
+            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User is not active');
+        }
+        if (!existUser.is_verified) {
+            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User is not verified');
+        }
+        const changeTime = existUser === null || existUser === void 0 ? void 0 : existUser.pass_changed_at;
+        const iatTime = verifiedUser === null || verifiedUser === void 0 ? void 0 : verifiedUser.iat;
+        if (changeTime && iatTime && changeTime > iatTime) {
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'Password changed after login');
         }
         next();
     }

@@ -11,7 +11,9 @@ const validateRequest_1 = __importDefault(require("../../middlewares/validateReq
 const Auth_controller_1 = require("./Auth.controller");
 const Auth_validation_1 = require("./Auth.validation");
 const router = (0, express_1.Router)();
-router.post('/sign-up', (0, validateRequest_1.default)(Auth_validation_1.AuthValidation.signUp), Auth_controller_1.AuthController.SignUp);
+router.post('/sign-up', (0, validateRequest_1.default)(Auth_validation_1.AuthValidation.signUp), Auth_controller_1.AuthController.signUpUser);
+router.post('/verify-signup-otp', (0, validateRequest_1.default)(Auth_validation_1.AuthValidation.verifySignUpOtp), Auth_controller_1.AuthController.verifySignUpOtp);
+router.post('/resend-otp', (0, validateRequest_1.default)(Auth_validation_1.AuthValidation.resendOtp), Auth_controller_1.AuthController.resendOtp);
 router.post('/login', (0, validateRequest_1.default)(Auth_validation_1.AuthValidation.loginUser), Auth_controller_1.AuthController.login);
 router.patch('/change-password', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.SUPER_ADMIN, user_1.ENUM_USER_ROLE.USER), (0, validateRequest_1.default)(Auth_validation_1.AuthValidation.changePassword), Auth_controller_1.AuthController.changePassword);
 router.post('/forgot-password', (0, validateRequest_1.default)(Auth_validation_1.AuthValidation.forgotPassword), Auth_controller_1.AuthController.forgotPassword);

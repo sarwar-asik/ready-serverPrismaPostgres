@@ -52,7 +52,7 @@ const userProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
     const authUser = req.user;
     const result = yield Users_service_1.UsersService.getProfile(authUser);
     if (result) {
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
         const { password } = result, profileData = __rest(result, ["password"]);
         (0, sendResponse_1.default)(res, {
             statusCode: http_status_1.default.OK,

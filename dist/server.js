@@ -16,6 +16,7 @@ require("colors");
 const app_1 = __importDefault(require("./app"));
 const config_1 = __importDefault(require("./config"));
 const logger_1 = require("./shared/logger");
+const prisma_1 = __importDefault(require("./shared/prisma"));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const server = app_1.default.listen(config_1.default.port, () => {
@@ -58,4 +59,12 @@ function main() {
         });
     });
 }
-main();
+main()
+    .then(() => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma_1.default.$disconnect();
+}))
+    .catch((e) => __awaiter(void 0, void 0, void 0, function* () {
+    console.error(e);
+    yield prisma_1.default.$disconnect();
+    process.exit(1);
+}));

@@ -4,14 +4,37 @@ exports.AuthValidation = void 0;
 const zod_1 = require("zod");
 const signUp = zod_1.z.object({
     body: zod_1.z.object({
-        name: zod_1.z
+        full_name: zod_1.z
             .string({
-            required_error: 'name is Required.',
+            required_error: 'Full name is required',
         })
             .optional(),
-        password: zod_1.z.string({ required_error: 'password is Required.' }),
-        email: zod_1.z.string({ required_error: 'email is Required.' }),
-        img: zod_1.z.string({ required_error: 'img is Required.' }).optional(),
+        user_name: zod_1.z
+            .string({
+            required_error: 'Username is required',
+        })
+            .optional(),
+        email: zod_1.z
+            .string({
+            required_error: 'Email is required',
+        })
+            .email('Invalid email format'),
+        self_pronoun: zod_1.z
+            .enum(['he', 'she', 'they'], {
+            required_error: 'Self identity must be either "he", "she", or "they"',
+        })
+            .optional(),
+        date_of_birth: zod_1.z
+            .string({
+            required_error: 'Date of birth is required',
+        })
+            .optional(),
+        password: zod_1.z
+            .string({
+            required_error: 'Password is required',
+        })
+            .min(6, 'Password must be at least 6 characters long')
+            .max(30, 'Password must not exceed 20 characters'),
     }),
 });
 const loginUser = zod_1.z.object({
@@ -58,6 +81,23 @@ const refreshTokenZodSchema = zod_1.z.object({
         }),
     }),
 });
+const verifySignUpOtp = zod_1.z.object({
+    body: zod_1.z.object({
+        email: zod_1.z.string({
+            required_error: 'email is required',
+        }).email('Invalid email format'),
+        otp: zod_1.z.string({
+            required_error: 'OTP is required',
+        }),
+    }),
+});
+const resendOtp = zod_1.z.object({
+    body: zod_1.z.object({
+        email: zod_1.z.string({
+            required_error: 'Email is required',
+        }).email('Invalid email format'),
+    }),
+});
 exports.AuthValidation = {
     signUp,
     loginUser,
@@ -65,4 +105,6 @@ exports.AuthValidation = {
     forgotPassword,
     resetPassword,
     refreshTokenZodSchema,
+    verifySignUpOtp,
+    resendOtp,
 };

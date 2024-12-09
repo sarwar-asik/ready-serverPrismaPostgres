@@ -21,24 +21,93 @@ const http_status_1 = __importDefault(require("http-status"));
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const sendMailer_1 = require("../../../helpers/sendMailer");
 const resetPassword_1 = require("./resetPassword");
-const signUp = (userData) => __awaiter(void 0, void 0, void 0, function* () {
+const Auth_helper_1 = require("./Auth.helper");
+const sendMail_1 = require("../../../helpers/mail/sendMail");
+const otp_template_1 = require("../../../helpers/mail/otp-template");
+const signUpUserDB = (userData) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExistUser = yield prisma_1.default.user.findUnique({
+        where: {
+            email: userData.email
+        }
+    });
+    if (isExistUser) {
+        if (!(isExistUser === null || isExistUser === void 0 ? void 0 : isExistUser.is_active)) {
+            throw new ApiError_1.default(http_status_1.default.CONFLICT, "User is not active");
+        }
+        if (!(isExistUser === null || isExistUser === void 0 ? void 0 : isExistUser.is_verified)) {
+            throw new ApiError_1.default(http_status_1.default.CONFLICT, "User is not verified");
+        }
+        throw new ApiError_1.default(http_status_1.default.CONFLICT, "User already exist");
+    }
+    const activationOTP = (0, Auth_helper_1.createActivationCode)();
+    const sendOtpMail = yield (0, sendMail_1.sendEmailFunc)({
+        email: userData === null || userData === void 0 ? void 0 : userData.email,
+        subject: 'Activate your Account',
+        html: (0, otp_template_1.registrationSuccessEmailBody)({
+            name: userData === null || userData === void 0 ? void 0 : userData.email,
+            activationCode: activationOTP,
+        }),
+    });
+    console.log(sendOtpMail, 'sendOtpMail');
+    const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
+    const hashedOTP = yield bcrypt_1.default.hash(activationOTP, Number(5));
+    userData.verify_code = hashedOTP;
+    userData.verify_expiration = expiryTime;
     userData.password = yield bcrypt_1.default.hash(userData.password, Number(config_1.default.bycrypt_salt_rounds));
-    // console.log("🚀 ~ file: Auth.service.ts:14 ~ userData:", userData)
-    userData.role = "admin";
-    const result = yield prisma_1.default.user.create({
+    const createUser = yield prisma_1.default.user.create({
         data: userData,
     });
-    const newAccessToken = jwtHelpers_1.jwtHelpers.createToken({
-        email: userData.email,
-        id: userData.id,
-        role: userData.role,
-    }, config_1.default.jwt.secret, config_1.default.jwt.expires_in);
     return {
-        accessToken: newAccessToken,
-        data: result,
+        email: createUser === null || createUser === void 0 ? void 0 : createUser.email,
+        id: createUser === null || createUser === void 0 ? void 0 : createUser.id,
+        role: createUser === null || createUser === void 0 ? void 0 : createUser.role,
     };
 });
-const authLogin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+// old code
+// const signUp = async (
+//   userData: User
+// ): Promise<{ data: User; accessToken: string }> => {
+//   userData.password = await bcrypt.hash(
+//     userData.password,
+//     Number(config.bycrypt_salt_rounds)
+//   );
+//   // console.log("🚀 ~ file: Auth.service.ts:14 ~ userData:", userData)
+//   // userData.role="user"
+//   const result = await prisma.user.create({
+//     data: userData,
+//   });
+//   const newAccessToken = jwtHelpers.createToken(
+//     {
+//       email: userData.email,
+//       id: userData.id,
+//       role: userData.role,
+//     },
+//     config.jwt.secret as Secret,
+//     config.jwt.expires_in as string
+//   );
+//   return {
+//     accessToken: newAccessToken,
+//     data: result,
+//   };
+// };
+const verifySignUpOtpDB = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
+    const isValidOTP = yield (0, Auth_helper_1.checkIsValidOTP)({ email, code: otp });
+    if (!isValidOTP.valid) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'OTP not found or already used');
+    }
+    yield prisma_1.default.user.update({
+        where: {
+            email,
+        },
+        data: {
+            is_verified: true,
+            is_active: true,
+            verify_code: null,
+            verify_expiration: null,
+        },
+    });
+});
+const authLoginDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = payload;
     // console.log(payload, 'payload');
     // const isUserExist = await User.isUserExistsMethod(phoneNumber);
@@ -50,7 +119,15 @@ const authLogin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     });
     // console.log(isUserExist);
     if (!isUserExist) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not match');
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
+    }
+    else {
+        if (!(isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.is_active)) {
+            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User is not active');
+        }
+        if (!(isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.is_verified)) {
+            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User is not verified');
+        }
     }
     const isPasswordMatch = yield bcrypt_1.default.compare(password, isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.password);
     if (isUserExist.password && !isPasswordMatch) {
@@ -61,11 +138,13 @@ const authLogin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         email,
         role: isUserExist.role,
         id: isUserExist.id,
+        user_name: isUserExist.user_name,
     }, config_1.default.jwt.secret, config_1.default.jwt.expires_in);
     const refreshToken = jwtHelpers_1.jwtHelpers.createToken({
         email,
         role: isUserExist.role,
         id: isUserExist.id,
+        user_name: isUserExist.user_name,
     }, config_1.default.jwt.refresh_secret, config_1.default.jwt.refresh_expires_in);
     return {
         accessToken,
@@ -100,7 +179,39 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         accessToken: newAccessToken,
     };
 });
-const changePassword = (authUser, passwordData) => __awaiter(void 0, void 0, void 0, function* () {
+const resendOtpDB = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExistUser = yield prisma_1.default.user.findUnique({
+        where: {
+            email,
+        },
+    });
+    if (!isExistUser) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist');
+    }
+    const activationOTP = (0, Auth_helper_1.createActivationCode)();
+    yield (0, sendMail_1.sendEmailFunc)({
+        email: email,
+        subject: 'Activate your Account',
+        html: (0, otp_template_1.registrationSuccessEmailBody)({
+            name: email,
+            activationCode: activationOTP,
+        }),
+    });
+    // console.log(sendOtpMail, 'sendOtpMail');
+    const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
+    const hashedOTP = yield bcrypt_1.default.hash(activationOTP, Number(5));
+    yield prisma_1.default.user.update({
+        where: {
+            email,
+        },
+        data: {
+            verify_code: hashedOTP,
+            verify_expiration: expiryTime,
+        },
+    });
+    return { email };
+});
+const changePasswordDB = (authUser, passwordData) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = authUser;
     // console.log(authUser);
     const { oldPassword, newPassword } = passwordData;
@@ -124,11 +235,12 @@ const changePassword = (authUser, passwordData) => __awaiter(void 0, void 0, voi
         },
         data: {
             password,
+            pass_changed_at: new Date(),
         },
     });
     return updatePass;
 });
-const forgotPassword = (passwordData) => __awaiter(void 0, void 0, void 0, function* () {
+const forgotPasswordLink = (passwordData) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('🚀passwordData:', passwordData);
     const isUserExist = yield prisma_1.default.user.findUnique({
         where: {
@@ -149,6 +261,38 @@ const forgotPassword = (passwordData) => __awaiter(void 0, void 0, void 0, funct
     // console.log(passResetToken, '');
     yield (0, sendMailer_1.senMailer)(resetPassword_1.resetPasswordSubject, isUserExist.email, (0, resetPassword_1.resetPasswordHTML)(resetLink));
     return passResetToken;
+});
+const forgotPasswordOTP_DB = (passwordData) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield prisma_1.default.user.findUnique({
+        where: {
+            email: passwordData.email,
+            is_active: true,
+            is_verified: true
+        },
+    });
+    if (!user) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User NOt Found');
+    }
+    const activationOTP = (0, Auth_helper_1.createActivationCode)();
+    yield (0, sendMail_1.sendEmailFunc)({
+        email: user === null || user === void 0 ? void 0 : user.email,
+        subject: 'Reset Password',
+        html: (0, otp_template_1.registrationSuccessEmailBody)({
+            name: user === null || user === void 0 ? void 0 : user.email,
+            activationCode: activationOTP,
+        }),
+    });
+    const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
+    const hashedOTP = yield bcrypt_1.default.hash(activationOTP, Number(5));
+    yield prisma_1.default.user.update({
+        where: {
+            email: user === null || user === void 0 ? void 0 : user.email,
+        },
+        data: {
+            verify_code: hashedOTP,
+            verify_expiration: expiryTime,
+        },
+    });
 });
 const resetPassword = (passwordData, token) => __awaiter(void 0, void 0, void 0, function* () {
     // console.log(passwordData, token);
@@ -177,10 +321,13 @@ const resetPassword = (passwordData, token) => __awaiter(void 0, void 0, void 0,
     return updatePass;
 });
 exports.AuthService = {
-    signUp,
-    authLogin,
-    changePassword,
-    forgotPassword,
+    signUpUserDB,
+    authLoginDB,
+    changePasswordDB,
+    forgotPasswordOTP_DB,
+    forgotPasswordLink,
     resetPassword,
     refreshToken,
+    verifySignUpOtpDB,
+    resendOtpDB,
 };
