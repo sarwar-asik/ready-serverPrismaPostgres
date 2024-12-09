@@ -75,6 +75,10 @@ SMTP_SECURE=false
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
 
+#------Super Admin
+SUPER_ADMIN_EMAIL=your-admin@email.com
+SUPER_ADMIN_PASSWORD=your-admin-password
+
 
 ```
 
@@ -83,7 +87,7 @@ SMTP_PASS=your-app-password
 1. Clone the repository:
 ```bash
 git clone [repository-url]
-cd map-points-backend
+cd ready-backend
 ```
 
 2. Install dependencies:
@@ -146,6 +150,79 @@ This project uses GitHub Actions for continuous integration and deployment. Our 
 - Deployment automation
 
 To view detailed workflow configurations, check `.github/workflows/build-deploy.yml`.
+
+## 📁 File Upload Features
+
+The backend supports file uploads with the following features:
+- Image upload support for user profiles
+- Automatic directory creation for uploads
+- File type validation
+- Size limits and optimization
+- Secure file storage
+
+## 👤 User Management
+
+- Role-based access control (User, Admin, Super Admin)
+- Super Admin seeding on first startup
+- Profile management with image upload
+- Secure password handling
+- Email verification
+
+## 🔐 Authentication Features
+
+- JWT-based authentication
+- Refresh token support
+- Password reset functionality
+- Email verification
+- Session management
+- Rate limiting on auth endpoints
+
+## 🐳 Docker Setup
+
+### Using Docker Compose (Recommended)
+
+1. Start all services:
+```bash
+docker-compose up -d
+```
+
+2. Stop all services:
+```bash
+docker-compose down
+```
+
+3. View logs:
+```bash
+docker-compose logs -f api
+```
+
+### Manual Docker Build
+
+1. Build the Docker image:
+```bash
+docker build -t ready-backend .
+```
+
+2. Run the container:
+```bash
+docker run -p 5000:5000 --env-file .env ready-backend
+```
+
+### Docker Configuration
+
+The project includes:
+- Multi-stage build optimization
+- Production-ready Node.js configuration
+- PostgreSQL database container
+- Volume persistence for database
+- Hot-reloading for development
+- Automatic container restart
+- Network isolation
+
+### Docker Files
+- `Dockerfile`: Multi-stage build configuration
+- `docker-compose.yml`: Service orchestration
+- `.dockerignore`: Build optimization
 
 ## 🤝 Contributing
 
