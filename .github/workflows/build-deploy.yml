@@ -1,0 +1,64 @@
+name: Ready the code and deploy
+
+on:
+  pull_request:
+    types:
+        - opened
+    branches:
+        - main
+        - release/**
+#   [push, workflow_dispatch]
+  push:
+    branches:
+        - 'main'
+        - 'release/**'  #! all branch started with release like release/v1 , release/v2
+
+jobs:
+# ! job-1
+  test-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check directory on Linux
+        run: |
+          echo "Running on ===>"
+          node -v
+          git -v
+          echo "Server details ===>"
+          whoami
+          pwd
+          ls -a
+          echo $GITHUB_WORKSPACE
+# ! job-2
+  build:
+    runs-on: ubuntu-latest
+    needs: [test-server]
+    steps:
+      - name: Copying the code
+        uses: actions/checkout@v4
+      - name: Install node
+        uses: actions/setup-node@v4
+        with:
+            node-version: 22
+      - name: Node Version
+        run: node --version
+      - name: Install the app
+        run: yarn install --frozen-lockfile
+      - name: Build the app
+        run: yarn build
+      # - name: Run the app
+      #   run: yarn dev
+
+# ! job-3
+  deploy-dashboard:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Copying the code
+        uses: actions/checkout@v4
+      - name: Install node
+        uses: actions/setup-node@v4
+        with:
+            node-version: 22
+      - name: Node Version
+        run: node --version
+    
