@@ -1,10 +1,10 @@
-# 🗺️ Map Points Backend
+# 🗺️ Ready Backend
 
 A robust backend service for managing geographical points of interest with authentication, rate limiting, and comprehensive API documentation.
 
 ## 🚀 Overview
 
-Map Points Backend is a TypeScript-based Express.js application that provides a secure and scalable API for managing geographical locations and points of interest. It uses Prisma as an ORM and implements various security features and optimizations.
+Ready Backend is a TypeScript-based Express.js application that provides a secure and scalable API for managing geographical locations and points of interest. It uses Prisma as an ORM and implements various security features and optimizations.
 
 ## 🛠️ Tech Stack
 

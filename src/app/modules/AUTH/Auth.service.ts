@@ -415,6 +415,7 @@ const resetPassword = async (
 
   return updatePass;
 };
+
 export const AuthService = {
   signUpUserDB,
   authLoginDB,
