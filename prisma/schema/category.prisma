@@ -1,8 +1,0 @@
-model Category {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String
-  published Boolean @default(false)
-  user_id   String  // Change user_id to String to match User.id type
-  author    User    @relation(fields: [user_id], references: [id])
-}

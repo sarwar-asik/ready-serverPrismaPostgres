@@ -9,36 +9,58 @@ import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import { senMailer } from '../../../helpers/sendMailer';
 import { resetPasswordHTML, resetPasswordSubject } from './resetPassword';
+import { createActivationCode } from './Auth.helper';
+import { sendEmailFunc } from '../../../helpers/mail/sendMail';
+import { registrationSuccessEmailBody } from '../../../helpers/mail/opt-template';
 
-const signUp = async (
-  userData: User
-): Promise<{ data: User; accessToken: string }> => {
+const signUpUserDB = async (
+  userData:User & any
+)=> {
+
+  const isExistUser = await prisma.user.findUnique({
+    where:{
+      email:userData.email
+    }
+  })
+  if (isExistUser) {
+    if (!isExistUser?.is_active) {
+      throw new ApiError(httpStatus.CONFLICT, "User is not active");
+    }
+    if (!isExistUser?.is_verified) {
+      throw new ApiError(httpStatus.CONFLICT, "User is not verified");
+    }
+    throw new ApiError(httpStatus.CONFLICT, "User already exist");
+  }
+
+const activationOTP = createActivationCode()
+const sendOtpMail = await sendEmailFunc({
+  email: userData?.email,
+  subject: 'Activate your Account',
+  html: registrationSuccessEmailBody({
+    name: userData?.email,
+    activationCode: activationOTP,
+  }),
+});
+console.log(sendOtpMail,'sendOtpMail')
+const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
+  const hashedOTP = await bcrypt.hash(activationOTP, Number(5));
+  userData.verify_code = hashedOTP;
+  userData.verify_expiration = expiryTime;
+
+
   userData.password = await bcrypt.hash(
     userData.password,
     Number(config.bycrypt_salt_rounds)
   );
 
-  // console.log("🚀 ~ file: Auth.service.ts:14 ~ userData:", userData)
-
-  // userData.role="user"
-
-  const result = await prisma.user.create({
+  const createUser= await prisma.user.create({
     data: userData,
   });
-
-  const newAccessToken = jwtHelpers.createToken(
-    {
-      email: userData.email,
-      id: userData.id,
-      role: userData.role,
-    },
-    config.jwt.secret as Secret,
-    config.jwt.expires_in as string
-  );
   return {
-    accessToken: newAccessToken,
-    data: result,
-  };
+    email: createUser?.email,
+    id: createUser?.id,
+    role: createUser?.role,
+  }
 };
 
 const authLogin = async (payload: {
@@ -257,7 +279,7 @@ const resetPassword = async (
   return updatePass;
 };
 export const AuthService = {
-  signUp,
+  signUpUserDB,
   authLogin,
   changePassword,
   forgotPassword,

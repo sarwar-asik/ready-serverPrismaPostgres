@@ -19,11 +19,7 @@ model test {
   user Int
 }
 
-enum Role {
-  user
-  admin
-  super_admin
-}
+
 
 // enum Role {
 //   user

@@ -9,7 +9,7 @@ const router = Router();
 router.post(
   '/sign-up',
   validateRequest(AuthValidation.signUp),
-  AuthController.SignUp
+  AuthController.signUpUser
 );
 router.post(
   '/login',
