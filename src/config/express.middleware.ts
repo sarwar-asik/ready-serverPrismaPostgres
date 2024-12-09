@@ -2,17 +2,20 @@
 import compression, { CompressionOptions } from 'compression';
 import { Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
+
+
 //!  compressor
-export const compressionOptions: CompressionOptions = {
-    threshold: 2048, //! Only compress responses larger than 1KB
-    filter: (req: Request, res: Response) => {
-      if (req.headers['x-no-compression']) {
-        // Don't compress responses if this request header is present
-        return false;
-      }
-      return compression.filter(req, res);
-    },
-  };
+export const compressionOptions:CompressionOptions = {
+  threshold: 2048, //! Only compress responses larger than 1KB
+  filter: function (req:Request|any, res:Response|any) {
+    if (req.headers['x-no-compression']) {
+      // Don't compress responses if this request header is present
+      return false;
+    }
+    // Use the default filter function from compression
+    return compression.filter(req, res);
+  },
+} ;
   
 
   // ! express-rate-limit
