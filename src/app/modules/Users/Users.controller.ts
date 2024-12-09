@@ -34,7 +34,7 @@ const userProfile = catchAsync(async (req: Request, res: Response) => {
   const result = await UsersService.getProfile(authUser);
 
   if (result) {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     const { password, ...profileData } = result;
 
     sendResponse<Partial<User>>(res, {

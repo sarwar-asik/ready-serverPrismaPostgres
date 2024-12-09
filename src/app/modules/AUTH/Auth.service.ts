@@ -9,39 +9,114 @@ import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import { senMailer } from '../../../helpers/sendMailer';
 import { resetPasswordHTML, resetPasswordSubject } from './resetPassword';
+import { checkIsValidOTP, createActivationCode, } from './Auth.helper';
+import { sendEmailFunc } from '../../../helpers/mail/sendMail';
+import { registrationSuccessEmailBody } from '../../../helpers/mail/otp-template';
 
-const signUp = async (
-  userData: User
-): Promise<{ data: User; accessToken: string }> => {
+const signUpUserDB = async (
+  userData:User & any
+)=> {
+
+  const isExistUser = await prisma.user.findUnique({
+    where:{
+      email:userData.email
+    }
+  })
+  if (isExistUser) {
+    if (!isExistUser?.is_active) {
+      throw new ApiError(httpStatus.CONFLICT, "User is not active");
+    }
+    if (!isExistUser?.is_verified) {
+      throw new ApiError(httpStatus.CONFLICT, "User is not verified");
+    }
+    throw new ApiError(httpStatus.CONFLICT, "User already exist");
+  }
+
+const activationOTP = createActivationCode()
+const sendOtpMail = await sendEmailFunc({
+  email: userData?.email,
+  subject: 'Activate your Account',
+  html: registrationSuccessEmailBody({
+    name: userData?.email,
+    activationCode: activationOTP,
+  }),
+});
+console.log(sendOtpMail,'sendOtpMail')
+const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
+  const hashedOTP = await bcrypt.hash(activationOTP, Number(5));
+  userData.verify_code = hashedOTP;
+  userData.verify_expiration = expiryTime;
+
+
   userData.password = await bcrypt.hash(
     userData.password,
     Number(config.bycrypt_salt_rounds)
   );
 
-  // console.log("🚀 ~ file: Auth.service.ts:14 ~ userData:", userData)
-
-  // userData.role="user"
-
-  const result = await prisma.user.create({
+  const createUser= await prisma.user.create({
     data: userData,
   });
-
-  const newAccessToken = jwtHelpers.createToken(
-    {
-      email: userData.email,
-      id: userData.id,
-      role: userData.role,
-    },
-    config.jwt.secret as Secret,
-    config.jwt.expires_in as string
-  );
   return {
-    accessToken: newAccessToken,
-    data: result,
-  };
+    email: createUser?.email,
+    id: createUser?.id,
+    role: createUser?.role,
+  }
 };
 
-const authLogin = async (payload: {
+// old code
+// const signUp = async (
+//   userData: User
+// ): Promise<{ data: User; accessToken: string }> => {
+//   userData.password = await bcrypt.hash(
+//     userData.password,
+//     Number(config.bycrypt_salt_rounds)
+//   );
+
+//   // console.log("🚀 ~ file: Auth.service.ts:14 ~ userData:", userData)
+
+//   // userData.role="user"
+
+//   const result = await prisma.user.create({
+//     data: userData,
+//   });
+
+//   const newAccessToken = jwtHelpers.createToken(
+//     {
+//       email: userData.email,
+//       id: userData.id,
+//       role: userData.role,
+//     },
+//     config.jwt.secret as Secret,
+//     config.jwt.expires_in as string
+//   );
+//   return {
+//     accessToken: newAccessToken,
+//     data: result,
+//   };
+// };
+
+
+const verifySignUpOtpDB = async (email: string, otp: string) => {
+  const isValidOTP = await checkIsValidOTP({ email, code: otp });
+
+  if (!isValidOTP.valid) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'OTP not found or already used');
+  }
+
+  await prisma.user.update({
+    where: {
+      email,
+    },
+    data: {
+      is_verified: true,
+      is_active: true,
+      verify_code: null,
+      verify_expiration: null,
+    },
+  });
+};
+
+const authLoginDB = async (payload: {
   email?: string;
   password: string;
 }): Promise<any> => {
@@ -60,7 +135,14 @@ const authLogin = async (payload: {
   // console.log(isUserExist);
 
   if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User does not match');
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }else{
+    if (!isUserExist?.is_active) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User is not active');
+    }
+    if (!isUserExist?.is_verified) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User is not verified');
+    }
   }
 
   const isPasswordMatch = await bcrypt.compare(password, isUserExist?.password);
@@ -75,6 +157,7 @@ const authLogin = async (payload: {
       email,
       role: isUserExist.role,
       id: isUserExist.id,
+      user_name: isUserExist.user_name,
     },
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
@@ -85,6 +168,7 @@ const authLogin = async (payload: {
       email,
       role: isUserExist.role,
       id: isUserExist.id,
+      user_name: isUserExist.user_name,
     },
     config.jwt.refresh_secret as Secret,
     config.jwt.refresh_expires_in as string
@@ -95,6 +179,7 @@ const authLogin = async (payload: {
     refreshToken,
   };
 };
+
 
 const refreshToken = async (token: string): Promise<any> => {
   //verify token
@@ -135,7 +220,40 @@ const refreshToken = async (token: string): Promise<any> => {
   };
 };
 
-const changePassword = async (
+const resendOtpDB = async (email: string): Promise<any> => {
+  const isExistUser = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!isExistUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
+  }
+  const activationOTP = createActivationCode();
+   await sendEmailFunc({
+    email: email,
+    subject: 'Activate your Account',
+    html: registrationSuccessEmailBody({
+      name: email,
+      activationCode: activationOTP,
+    }),
+  });
+  // console.log(sendOtpMail, 'sendOtpMail');
+  const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
+  const hashedOTP = await bcrypt.hash(activationOTP, Number(5));
+   await prisma.user.update({
+    where: {
+      email,
+    },
+    data: {
+      verify_code: hashedOTP,
+      verify_expiration: expiryTime,
+    },
+  });
+
+  return {email}
+}
+const changePasswordDB = async (
   authUser: any,
   passwordData: any
 ): Promise<any> => {
@@ -174,13 +292,14 @@ const changePassword = async (
     },
     data: {
       password,
+      pass_changed_at: new Date(),
     },
   });
 
   return updatePass;
 };
 
-const forgotPassword = async (passwordData: any): Promise<any> => {
+const forgotPasswordLink = async (passwordData: any): Promise<any> => {
   console.log('🚀passwordData:', passwordData);
 
   const isUserExist = await prisma.user.findUnique({
@@ -210,6 +329,46 @@ const forgotPassword = async (passwordData: any): Promise<any> => {
   );
 
   return passResetToken;
+};
+
+const forgotPasswordOTP_DB= async (passwordData: {
+  email: string;
+}): Promise<any> => {
+ const user = await prisma.user.findUnique({
+    where: {
+      email: passwordData.email,
+      is_active: true,
+      is_verified: true
+    },
+  });
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User NOt Found');
+  }
+  const activationOTP = createActivationCode();
+
+  await sendEmailFunc({
+    email: user?.email,
+    subject: 'Reset Password',
+    html: registrationSuccessEmailBody({
+      name: user?.email,
+      activationCode: activationOTP,
+    }),
+  });
+
+  const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
+
+  const hashedOTP = await bcrypt.hash(activationOTP, Number(5));
+
+  await prisma.user.update({
+    where: {
+      email: user?.email,
+    },  
+    data: {
+      verify_code: hashedOTP, 
+      verify_expiration: expiryTime,
+    },
+  });
+ 
 };
 
 const resetPassword = async (
@@ -257,10 +416,14 @@ const resetPassword = async (
   return updatePass;
 };
 export const AuthService = {
-  signUp,
-  authLogin,
-  changePassword,
-  forgotPassword,
+  signUpUserDB,
+  authLoginDB,
+  changePasswordDB,
+  forgotPasswordOTP_DB,
+  forgotPasswordLink,
   resetPassword,
   refreshToken,
+  verifySignUpOtpDB,
+  resendOtpDB,
+
 };

@@ -9,8 +9,21 @@ const router = Router();
 router.post(
   '/sign-up',
   validateRequest(AuthValidation.signUp),
-  AuthController.SignUp
+  AuthController.signUpUser
 );
+
+router.post(
+  '/verify-signup-otp',
+  validateRequest(AuthValidation.verifySignUpOtp),
+  AuthController.verifySignUpOtp
+);
+
+router.post(
+  '/resend-otp',
+  validateRequest(AuthValidation.resendOtp),
+  AuthController.resendOtp
+);
+
 router.post(
   '/login',
   validateRequest(AuthValidation.loginUser),

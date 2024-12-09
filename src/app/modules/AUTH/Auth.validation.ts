@@ -1,15 +1,38 @@
 import { z } from 'zod';
+
 const signUp = z.object({
   body: z.object({
-    name: z
+    full_name: z
       .string({
-        required_error: 'name is Required.',
+        required_error: 'Full name is required',
       })
       .optional(),
-    password: z.string({ required_error: 'password is Required.' }),
-    email: z.string({ required_error: 'email is Required.' }),
-
-    img: z.string({ required_error: 'img is Required.' }).optional(),
+    user_name: z
+      .string({
+        required_error: 'Username is required',
+      })
+      .optional(),
+    email: z
+      .string({
+        required_error: 'Email is required',
+      })
+      .email('Invalid email format'),
+    self_pronoun: z
+      .enum(['he', 'she', 'they'], {
+        required_error: 'Self identity must be either "he", "she", or "they"',
+      })
+      .optional(),
+    date_of_birth: z
+      .string({
+        required_error: 'Date of birth is required',
+      })
+      .optional(),
+    password: z
+      .string({
+        required_error: 'Password is required',
+      })
+      .min(6, 'Password must be at least 6 characters long')
+      .max(30, 'Password must not exceed 20 characters'),
   }),
 });
 
@@ -23,6 +46,7 @@ const loginUser = z.object({
     }),
   }),
 });
+
 const changePassword = z.object({
   body: z.object({
     oldPassword: z.string({
@@ -33,6 +57,7 @@ const changePassword = z.object({
     }),
   }),
 });
+
 const forgotPassword = z.object({
   body: z.object({
     email: z.string({
@@ -40,6 +65,7 @@ const forgotPassword = z.object({
     }),
   }),
 });
+
 const resetPassword = z.object({
   body: z.object({
     email: z.string({
@@ -59,6 +85,25 @@ const refreshTokenZodSchema = z.object({
   }),
 });
 
+const verifySignUpOtp = z.object({
+  body: z.object({
+    email: z.string({
+      required_error: 'email is required',
+    }).email('Invalid email format'),
+    otp: z.string({
+      required_error: 'OTP is required',
+    }),
+  }),
+});
+
+const resendOtp = z.object({
+  body: z.object({
+    email: z.string({
+      required_error: 'Email is required',
+    }).email('Invalid email format'),
+  }),
+});
+
 export const AuthValidation = {
   signUp,
   loginUser,
@@ -66,4 +111,6 @@ export const AuthValidation = {
   forgotPassword,
   resetPassword,
   refreshTokenZodSchema,
+  verifySignUpOtp,
+  resendOtp,
 };

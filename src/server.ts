@@ -3,6 +3,7 @@ import { Server } from 'http';
 import app from './app';
 import config from './config';
 import { errorlogger } from './shared/logger';
+import prisma from './shared/prisma';
 
 async function main() {
   const server: Server = app.listen(config.port, () => {
@@ -49,4 +50,12 @@ async function main() {
   });
 }
 
-main();
+main()
+  .then(async () => {
+    await prisma.$disconnect()
+  })
+  .catch(async (e) => {
+    console.error(e)
+    await prisma.$disconnect()
+    process.exit(1)
+  })

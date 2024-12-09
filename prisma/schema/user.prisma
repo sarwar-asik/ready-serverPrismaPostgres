@@ -1,0 +1,45 @@
+model User {
+  id                 String    @id @default(uuid())  
+  full_name          String?
+  user_name          String?
+  email              String    @unique
+  role               Role       @default(user)
+  password           String
+  self_pronoun       Pronoun?
+  profile_img        String?
+  phone_number       String?
+  verify_code        String?
+  is_verified        Boolean   @default(false)
+  verify_expiration  DateTime?
+  pass_changed_at    DateTime?
+  is_active          Boolean   @default(false)
+  fcm_token          String?
+  app_id             String?
+  is_social          Boolean   @default(false)
+  address            String?
+  location           Json?      @default("{\"long\": \"\", \"lat\": \"\", \"street\": \"\"}")
+  date_of_birth      String?
+  height             String?
+  weight             String?
+  gender             Gender?
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt 
+}
+
+enum Role {
+  super_admin
+  admin
+  user
+}
+
+enum Pronoun {
+  he
+  she
+  they
+}
+
+enum Gender {
+  male
+  female
+  others
+}

@@ -2,41 +2,71 @@ import { User } from '@prisma/client';
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import config from '../../../config';
-import { tokenName } from '../../../constants/jwt.token';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { AuthService } from './Auth.service';
 
-const SignUp = catchAsync(async (req: Request, res: Response) => {
-  const data = req.body;
-  const result = await AuthService.signUp(data);
-  
+export const signUpUser = catchAsync(
+  async (req: Request, res: Response) => {
+    const { ...user } = req.body;
+    // console.log(user, 'from controller=================');
+    const result = await AuthService.signUpUserDB(user);
 
-  const cookieOptions = {
-    secure: config.env === 'production',
-    httpOnly: true,
-  };
+    if (result) {
+      sendResponse(res, {
+        success: true,
+        message: "sent OTP. Please, verify your email/finger",
+        statusCode: 200,
+        data: result,
+      });
+    }
+  }
+);
 
-  if (result) {
-    res.cookie(tokenName, result?.accessToken, cookieOptions);
-    // eslint-disable-next-line no-unused-vars
-    const { password, ...userData } = result.data;
+export const verifySignUpOtp = catchAsync(
+  async (req: Request, res: Response) => {
+    const { email, otp } = req.body;
+    const result = await AuthService.verifySignUpOtpDB(email, otp);
 
-    sendResponse<Partial<User>>(res, {
-      statusCode: httpStatus.CREATED,
+    sendResponse(res, {
       success: true,
-      message: 'Successfully SignUp',
-      data: userData,
+      message: 'OTP verified successfully',
+      statusCode: 200,
+      data: result,
     });
   }
-});
+);
+
+// const SignUp = catchAsync(async (req: Request, res: Response) => {
+//   const data = req.body;
+//   const result = await AuthService.signUp(data);
+  
+
+//   const cookieOptions = {
+//     secure: config.env === 'production',
+//     httpOnly: true,
+//   };
+
+//   if (result) {
+//     res.cookie(tokenName, result?.accessToken, cookieOptions);
+//     // eslint-disable-next-line no-unused-vars
+//     const { password, ...userData } = result.data;
+
+//     sendResponse<Partial<User>>(res, {
+//       statusCode: httpStatus.CREATED,
+//       success: true,
+//       message: 'Successfully SignUp',
+//       data: userData,
+//     });
+//   }
+// });
 
 const login = catchAsync(async (req: Request, res: Response) => {
   const { ...loginData } = req.body;
 
   // console.log(loginData,"asdfsd");
 
-  const result = await AuthService.authLogin(loginData);
+  const result = await AuthService.authLoginDB(loginData);
 
   const { refreshToken, ...others } = result;
 
@@ -58,7 +88,7 @@ const login = catchAsync(async (req: Request, res: Response) => {
 const changePassword = catchAsync(async (req: Request, res: Response) => {
   const authUser = req.user as any;
   const passData = req.body;
-  const result = await AuthService.changePassword(authUser, passData);
+  const result = await AuthService.changePasswordDB(authUser, passData);
 
   sendResponse<Partial<User>>(res, {
     statusCode: httpStatus.OK,
@@ -70,7 +100,7 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
 
 const forgotPassword = catchAsync(async (req: Request, res: Response) => {
   const passData = req.body;
-  await AuthService.forgotPassword(passData);
+  await AuthService.forgotPasswordOTP_DB(passData);
 
   sendResponse<Partial<User>>(res, {
     statusCode: httpStatus.OK,
@@ -112,11 +142,26 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+export const resendOtp = catchAsync(async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const result = await AuthService.resendOtpDB(email);
+
+  sendResponse(res, {
+    success: true,
+    message: 'OTP resent successfully',
+    statusCode: httpStatus.OK,
+    data: result,
+  });
+});
+
 export const AuthController = {
-  SignUp,
+  signUpUser,
+  verifySignUpOtp,
   login,
   changePassword,
   forgotPassword,
   resetPassword,
   refreshToken,
+  resendOtp,
 };
