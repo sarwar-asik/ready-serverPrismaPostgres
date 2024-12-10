@@ -1,6 +1,10 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
+import httpStatus from 'http-status';
 import { ENUM_USER_ROLE } from '../../../enums/user';
+import ApiError from '../../../errors/ApiError';
+import { uploadLocalFileURL } from '../../../helpers/upload.helper';
 import auth from '../../middlewares/auth';
+import { uploadFile } from '../../middlewares/fileUploader';
 import validateRequest from '../../middlewares/validateRequest';
 import { AuthController } from './Auth.controller';
 import { AuthValidation } from './Auth.validation';
@@ -11,6 +15,29 @@ router.post(
   validateRequest(AuthValidation.signUp),
   AuthController.signUpUser
 );
+
+router.post(
+    '/sign-up-form',
+    uploadFile.single('profile_img'),
+    (req: Request | any, res: Response, next: NextFunction) => {
+      if (!req?.body?.data) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Data is required');
+      }
+      else {
+        req.body = AuthValidation.signupData.parse(JSON.parse(req.body.data));
+      }
+
+      if (!req?.file) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Image is required');
+      }
+      else {
+        uploadLocalFileURL(req, 'single', 'profile_img');
+      }
+
+      return AuthController.signUpUser(req, res, next);
+    }
+  );
+
 
 router.post(
   '/verify-signup-otp',

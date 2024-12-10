@@ -1,7 +1,7 @@
 import path from 'path';
 import swaggerJsdoc from 'swagger-jsdoc';
 import config from '../config';
-import { swaggerDefinition, swaggerTags } from './swagger.utils';
+import {  swaggerDefinition, swaggerTags } from './swagger.utils';
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -89,6 +89,7 @@ export const swaggerUiOptions = {
     persistAuthorization: true,
   },
 };
+
 
 export const swaggerApiSpecification = swaggerJsdoc(options);
 

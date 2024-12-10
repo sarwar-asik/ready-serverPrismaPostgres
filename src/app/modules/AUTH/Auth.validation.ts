@@ -1,40 +1,43 @@
 import { z } from 'zod';
 
+
+const signupData=   z.object({
+  full_name: z
+    .string({
+      required_error: 'Full name is required',
+    })
+    .optional(),
+  user_name: z
+    .string({
+      required_error: 'Username is required',
+    })
+    .optional(),
+  email: z
+    .string({
+      required_error: 'Email is required',
+    })
+    .email('Invalid email format'),
+  self_pronoun: z
+    .enum(['he', 'she', 'they'], {
+      required_error: 'Self identity must be either "he", "she", or "they"',
+    })
+    .optional(),
+  date_of_birth: z
+    .string({
+      required_error: 'Date of birth is required',
+    })
+    .optional(),
+  password: z
+    .string({
+      required_error: 'Password is required',
+    })
+    .min(6, 'Password must be at least 6 characters long')
+    .max(30, 'Password must not exceed 20 characters'),
+})
+
+
 const signUp = z.object({
-  body: 
-  z.object({
-    full_name: z
-      .string({
-        required_error: 'Full name is required',
-      })
-      .optional(),
-    user_name: z
-      .string({
-        required_error: 'Username is required',
-      })
-      .optional(),
-    email: z
-      .string({
-        required_error: 'Email is required',
-      })
-      .email('Invalid email format'),
-    self_pronoun: z
-      .enum(['he', 'she', 'they'], {
-        required_error: 'Self identity must be either "he", "she", or "they"',
-      })
-      .optional(),
-    date_of_birth: z
-      .string({
-        required_error: 'Date of birth is required',
-      })
-      .optional(),
-    password: z
-      .string({
-        required_error: 'Password is required',
-      })
-      .min(6, 'Password must be at least 6 characters long')
-      .max(30, 'Password must not exceed 20 characters'),
-  }),
+  body: signupData
 });
 
 const loginUser = z.object({
@@ -106,6 +109,7 @@ const resendOtp = z.object({
 });
 
 export const AuthValidation = {
+  signupData,
   signUp,
   loginUser,
   changePassword,

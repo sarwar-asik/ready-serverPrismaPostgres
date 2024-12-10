@@ -4,7 +4,7 @@
  * @swagger
  * /api/v1/auth/sign-up:
  *   post:
- *     summary: User Registration
+ *     summary: User Registration (JSON)
  *     tags:
  *       - Auth
  *     requestBody:
@@ -14,12 +14,27 @@
  *           schema:
  *             type: object
  *             properties:
+ *               full_name:
+ *                 type: string
+ *                 example: John Doe
+ *               user_name:
+ *                 type: string
+ *                 example: johndoe
  *               email:
  *                 type: string
  *                 example: sarwarasik@gmail.com
+ *               self_pronoun:
+ *                 type: string
+ *                 enum: [he, she, they]
+ *                 example: he
+ *               date_of_birth:
+ *                 type: string
+ *                 example: "1990-01-01"
  *               password:
  *                 type: string
  *                 example: map
+ *                 minLength: 6
+ *                 maxLength: 30
  *             required:
  *               - email
  *               - password
@@ -43,6 +58,69 @@
  *                 data:
  *                   type: object
  *
+ * /api/v1/auth/sign-up-form:
+ *   post:
+ *     summary: User Registration with Profile Image
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               data:
+ *                 type: string
+ *                 description: JSON string containing user data
+ *                 example: '{"full_name":"John Doe","user_name":"johndoe","email":"sarwarasik@gmail.com","self_pronoun":"he","date_of_birth":"1990-01-01","password":"password123"}'
+ *               profile_img:
+ *                 type: string
+ *                 format: binary
+ *                 description: Profile image file
+ *             required:
+ *               - data
+ *               - profile_img
+ *     responses:
+ *       200:
+ *         description: OTP sent for verification
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: sent OTP. Please, verify your email/finger
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     email:
+ *                       type: string
+ *                       example: sarwarasik@gmail.com
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Data is required
+ *                 statusCode:
+ *                   type: number
+ *                   example: 400
+ *
  * /api/v1/auth/verify-signup-otp:
  *   post:
  *     summary: Verify Sign Up OTP
@@ -60,7 +138,7 @@
  *                 example:  sarwarasik@gmail.com
  *               otp:
  *                 type: string
- *                 example: "123456"
+ *                 example: "1234"
  *             required:
  *               - email
  *               - otp

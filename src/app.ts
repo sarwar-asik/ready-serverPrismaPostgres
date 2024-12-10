@@ -10,6 +10,7 @@ import { LogsRoutes } from './app/modules/logs/logs.rotes';
 import router from './app/routes';
 import config from './config';
 import { compressionOptions, helmetConfig, limiterRate } from './config/express.middleware';
+// import prisma from './shared/prisma';
 import { swaggerApiSpecification, swaggerUiOptions } from './utils/swagger.spec';
 const app: Application = express();
 
@@ -39,7 +40,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerApiSpecification, s
 
 app.use(helmetConfig);
 
-
+// app.get('/test', (req: Request, res: Response) => {
+//   res.json({
+//     prisData:prisma
+//   });
+// });
 app.use('/api/v1', router);
 
 app.use("/logs", LogsRoutes);
@@ -48,6 +53,7 @@ app.use('/uploadFile', express.static(path.join(__dirname, '../uploadFile')));
 app.get('/api-docs-json', (req, res) => {
   res.json(swaggerApiSpecification);
 });
+
 
 // strict mode on path
 
