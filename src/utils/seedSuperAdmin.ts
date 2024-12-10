@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
 
@@ -12,16 +13,17 @@ export const seedSuperAdmin = async () => {
                 role:Role.super_admin,
             },
         });
+        // console.log(config.superAdmin,'ssssssssssss')
         if (existingSuperAdmin) {
             // console.log('Super admin account already exists');
             return;
         }
-   
 
+        
       await prisma.user.create({
             data: {
             email: config.superAdmin.email as string,
-            password: config.superAdmin.password as string,
+            password: await bcrypt.hash(config.superAdmin.password as string,  Number(config.bycrypt_salt_rounds)),
             role: 'super_admin',
             is_active: true,
             is_verified: true

@@ -241,3 +241,10 @@ The project includes:
 - Express.js community
 - Prisma team
 - TypeScript team
+
+<!-- 
+[![autocomplete](https://codeium.com/badges/user/sarwar-asik/autocomplete)](https://codeium.com/profile/sarwar-asik)
+
+
+
+[![streak](https://codeium.com/badges/v2/user/sarwar-asik/streak)](https://codeium.com/profile/sarwar-asik) -->

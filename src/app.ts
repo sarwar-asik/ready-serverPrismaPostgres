@@ -1,14 +1,16 @@
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Application, NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
+import path from "path";
+import swaggerUi from 'swagger-ui-express';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
+import { LogsRoutes } from './app/modules/logs/logs.rotes';
 import router from './app/routes';
 import config from './config';
-import { compressionOptions, limiterRate } from './config/express.middleware';
-import { LogsRoutes } from './app/modules/logs/logs.rotes';
-
+import { compressionOptions, helmetConfig, limiterRate } from './config/express.middleware';
+import { swaggerApiSpecification, swaggerUiOptions } from './utils/swagger.spec';
 const app: Application = express();
 
 app.use(
@@ -33,10 +35,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(compression(compressionOptions));
 app.use(limiterRate);
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerApiSpecification, swaggerUiOptions));
+
+app.use(helmetConfig);
+
 
 app.use('/api/v1', router);
 
 app.use("/logs", LogsRoutes);
+app.use('/uploadFile', express.static(path.join(__dirname, '../uploadFile')));
+
+app.get('/api-docs-json', (req, res) => {
+  res.json(swaggerApiSpecification);
+});
 
 // strict mode on path
 

@@ -3,6 +3,7 @@ import ApiError from "../../../errors/ApiError";
 import prisma from "../../../shared/prisma";
 import { User } from "@prisma/client";
 import bcrypt from 'bcrypt';
+
 export const createActivationCode = () => {
     const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
     return activationCode;

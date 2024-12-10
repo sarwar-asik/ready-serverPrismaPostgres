@@ -84,6 +84,26 @@
             "date": 1733742148373,
             "name": "C:\\Users\\sarwa\\WEB\\JOB\\Sparktech\\Projects\\MapPoint\\map-points-backend\\logs\\winston\\errors\\phu-2024-09-12-17-error.log",
             "hash": "0043abce7f1c8b472f44f1e4da688698b61b224b516ea8b9de7a850b85540955"
+        },
+        {
+            "date": 1733746144987,
+            "name": "C:\\Users\\sarwa\\WEB\\JOB\\Sparktech\\Projects\\MapPoint\\map-points-backend\\logs\\winston\\errors\\phu-2024-09-12-18-error.log",
+            "hash": "78bee1db49d662f46f63fafcc455fa7513267ef177389c6e837ce427514268a7"
+        },
+        {
+            "date": 1733751989917,
+            "name": "C:\\Users\\sarwa\\WEB\\JOB\\Sparktech\\Projects\\MapPoint\\map-points-backend\\logs\\winston\\errors\\phu-2024-09-12-19-error.log",
+            "hash": "a8e310c413e513c5df5522164ea971089d5dddbf10c912622874a301dfd59533"
+        },
+        {
+            "date": 1733801345173,
+            "name": "C:\\Users\\sarwa\\WEB\\JOB\\Sparktech\\Projects\\MapPoint\\map-points-backend\\logs\\winston\\errors\\phu-2024-10-12-09-error.log",
+            "hash": "21d5f560ef26ff782f76f5fffd56613ed5a39c533f8b001cea060aa7798bd3ad"
+        },
+        {
+            "date": 1733803265963,
+            "name": "C:\\Users\\sarwa\\WEB\\JOB\\Sparktech\\Projects\\MapPoint\\map-points-backend\\logs\\winston\\errors\\phu-2024-10-12-10-error.log",
+            "hash": "de57d544fd046c168155fbb21595240d6143634875e23751a34738d68112dd22"
         }
     ],
     "hashType": "sha256"

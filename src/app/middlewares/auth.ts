@@ -12,18 +12,21 @@ const auth =
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       //get authorization token
-      const token = req.headers.authorization;
-      if (!token) {
+      const tokenWithBearer = req.headers.authorization;
+      console.log(req.headers,'token')
+      if (!tokenWithBearer) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not authorized');
       }
       // verify token
-      let verifiedUser = null;
+      if (tokenWithBearer && tokenWithBearer.startsWith('Bearer')) {
+        const token = tokenWithBearer.split(' ')[1];
+        let verifiedUser = null;
 
-      verifiedUser = jwtHelpers.verifyToken(token, config.jwt.secret as Secret);
+        verifiedUser = jwtHelpers.verifyToken(token, config.jwt.secret as Secret);
 
-      req.user = verifiedUser; // role  , userid
+        req.user = verifiedUser; // role  , userid
 
-      // role diye guard korar jnno
+        // role diye guard korar jnno
       if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
         throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden');
       }
@@ -44,10 +47,17 @@ const auth =
 
       const changeTime = existUser?.pass_changed_at
       const iatTime = verifiedUser?.iat
-      if(changeTime && iatTime && changeTime > iatTime){
-       throw new ApiError(httpStatus.FORBIDDEN, 'Password changed after login');
-      }
-
+      console.log(changeTime,'changeTime')
+      console.log(iatTime,'iatTime')
+      if (changeTime && iatTime) {
+        // Convert changeTime to a UNIX timestamp
+        const changeTimeUnix = Math.floor(new Date(changeTime).getTime() / 1000); // Convert to seconds
+        console.log(changeTimeUnix, 'changeTimeUnix');
+      
+        if (changeTimeUnix > iatTime) {
+          throw new ApiError(httpStatus.FORBIDDEN, 'Password changed after login');
+        }
+      }}
       next();
     } catch (error) {
       next(error);
