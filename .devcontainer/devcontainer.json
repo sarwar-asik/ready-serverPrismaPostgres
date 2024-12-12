@@ -1,0 +1,23 @@
+{
+    "name": "Ready Backend",
+    "dockerFile": "Dockerfile",
+    "context": "..",
+    "appPort": [5000],
+    "mounts": [
+        "${workspaceFolder}/src:/app/src",
+        "${workspaceFolder}/prisma:/app/prisma",
+        "${workspaceFolder}/logs:/app/logs",
+        "${workspaceFolder}/node_modules:/app/node_modules",
+        "${workspaceFolder}/dist:/app/dist",
+        "db_data:/var/lib/postgresql/data"  // Bind mount for PostgreSQL data
+    ],
+    "runArgs": [
+        "--init",
+        "--rm",
+        "-p 5000:5000",
+        "-d"  // Run container in detached mode
+    ],
+    "postCreateCommand": "npm install",
+    "remoteUser": "node"
+ // Optional: name of the service in Docker Compose
+}

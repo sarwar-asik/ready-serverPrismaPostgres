@@ -64,6 +64,7 @@ Ready Backend is a TypeScript-based Express.js application that provides a secur
 Create a `.env` file in the root directory with the following variables:
 
 ```env
+
 #------Server
 NODE_ENV=development
 PORT=5000
