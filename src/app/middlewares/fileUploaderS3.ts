@@ -7,7 +7,6 @@ import path from 'path';
 import { S3Client } from '@aws-sdk/client-s3';
 import config from '../../config';
 
-
 const s3Config = new S3Client({
     region: config.s3.region as string,
     credentials: {
@@ -149,3 +148,79 @@ export const uploadFileS3 = (useS3: boolean = false) =>
 //         });
 //     }
 // );
+
+
+// !single image upload
+// router.post('/create',
+//     auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+// uploadFileS3(true).single('img'),
+//     (req: Request, res: Response, next: NextFunction) => {
+//         // console.log(req.body.data);
+//         req.body = ProgrammeValidation.createProgrammeZodSchema.parse(JSON.parse(req.body.data));
+//         // console.log(req.file,'reqqq')
+//         // console.log(req.files,'reqqq')
+//         const file = req.file as any;
+//         // return
+//         if (req.file) {
+//             // uploadLocalFileURL(req, 'single', 'img');
+//             req.body.img = file.location
+//         }
+//         else {
+//             throw new ApiError(httpStatus.BAD_REQUEST, 'img file is required');
+//         }
+//         return ProgrammeController.createProgramme(req, res, next);
+//     }
+
+// );
+
+
+// ! video upload
+// router.post('/create', auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+//  uploadFileS3(true).fields([
+//         { name: 'video', maxCount: 1 },
+//     ]),
+//     (req: Request, res: Response, next: NextFunction) => {
+//         try {
+//             req.body = ExerciseValidation.createExercise.parse(JSON.parse(req.body.data));
+//             if (req.files) {
+//                 const files = req.files as any
+//                 if (files['video']) {
+//                     // req.body.video = '/uploadFile/videos/' + files['video'][0].filename;             
+//                     req.body.video = files['video'][0].location
+//                 } 
+//                 else {
+//                     throw new ApiError(httpStatus.BAD_REQUEST, 'Video is required');
+//                 }
+//             }
+//             return ExerciseController.createExercise(req, res, next);
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
+
+
+//! multiple image upload
+// router.post('/create',
+//     auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+// uploadFileS3(true).fields([
+//         { name: 'img', maxCount: 1 },
+//         { name: 'equipment_img', maxCount: 1 },
+//         { name: 'muscle_group_img', maxCount: 1 },
+//     ]),
+//     (req: Request, res: Response, next: NextFunction) => {
+//         // console.log(req.body.data);
+//         req.body = WorkoutValidation.createWorkout.parse(JSON.parse(req.body.data));
+//         if (req.files) {
+//             const files = req.files as any;
+//             if (files['img']) {
+//                 req.body.img = files['img'][0].location;
+//             }
+//             if (files['equipment_img']) {
+//                 req.body.equipment_img = files['equipment_img'][0].location;
+//             }
+//             if (files['muscle_group_img']) {
+//                 req.body.muscle_group_img = files['muscle_group_img'][0].location;
+//             }
+//         }
+// 

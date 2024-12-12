@@ -1,10 +1,10 @@
 # 🗺️ Ready Backend
 
-A robust backend service for managing geographical points of interest with authentication, rate limiting, and comprehensive API documentation.
+A advance backend boilerplate with modern secure high demand features
 
 ## 🚀 Overview
 
-Ready Backend is a TypeScript-based Express.js application that provides a secure and scalable API for managing geographical locations and points of interest. It uses Prisma as an ORM and implements various security features and optimizations.
+Ready Backend is a TypeScript-based Express.js application that provides a secure and scalable API. It uses Prisma as an ORM and implements various security features and optimizations.
 
 ## 🛠️ Tech Stack
 
@@ -42,13 +42,21 @@ Ready Backend is a TypeScript-based Express.js application that provides a secur
   - TypeScript support
   - Code formatting and linting
   - Git hooks for code quality
+  - CI/CD with GitHub Actions
+  - Docker support
+  - AWS S3 for file storage
+  - Cloudinary for image processing
+  - Nodemailer for email sending
+  - Swagger for API documentation
+  - Sentry for error monitoring
+  - Docker Compose for easy local development
 
 ## 🚦 Getting Started
 
 ### Prerequisites
 
 - Node.js (v14 or higher)
-- npm or yarn
+- npm or yarn or pnpm
 - PostgreSQL database
 
 ### Environment Setup
@@ -62,8 +70,8 @@ PORT=5000
 SERVER_NAME="Ready Backend"
 
 #------Database
-DATABASE_URL="postgresql://postgres:pass_your@127.0.0.1:5432/map_points_db?schema=public"
-SHADOW_DATABASE_URL='postgresql://postgres:pass_your@127.0.0.1:5432/map_points_db?schema=public'
+DATABASE_URL="postgresql://postgres:pass_your@127.0.0.1:5432/ready-backend_db?schema=public"
+SHADOW_DATABASE_URL='postgresql://postgres:pass_your@127.0.0.1:5432/ready-backend_db?schema=public'
 
 #----------Security
 BCRYPT_SALT_ROUNDS=12
