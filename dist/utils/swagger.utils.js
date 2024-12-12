@@ -4,36 +4,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.swaggerDefinition = exports.swaggerTags = void 0;
-const config_1 = __importDefault(require("../config"));
+const prisma_1 = __importDefault(require("../shared/prisma"));
+const modelConverterDocs_1 = require("./modelConverterDocs");
 exports.swaggerTags = [
+    // use different text icons for different tags
     {
         name: "User",
         description: "👤 User profile related API"
     },
+    {
+        name: "Auth",
+        description: "🔑 Auth related API"
+    },
 ];
-exports.swaggerDefinition = {
-    openapi: "3.0.0",
-    info: {
-        title: ` ${config_1.default.server_name} Backend`,
-        version: "1.0.0",
-        description: `Api Design of  ${config_1.default.server_name}`,
-        contact: {
-            name: "Sarwar Hossain [Spark Tech Agency]",
-            email: "sarwarasik@gmail.com",
-            url: "https://www.linkedin.com/in/sarwar-asik/",
-        },
-        license: {
-            name: "Bd Calling IT",
-            url: "https://sparktech.agency/",
-        },
-    },
-    components: {
-        securitySchemes: {
-            bearerAuth: {
-                type: "http",
-                scheme: "bearer",
-                bearerFormat: "JWT",
-            },
-        },
-    },
-};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const prismaModel = prisma_1.default;
+exports.swaggerDefinition = (0, modelConverterDocs_1.parsePrismaSchema)(prismaModel._engineConfig.inlineSchema);

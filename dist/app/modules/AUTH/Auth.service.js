@@ -19,11 +19,11 @@ const prisma_1 = __importDefault(require("../../../shared/prisma"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const http_status_1 = __importDefault(require("http-status"));
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
-const sendMailer_1 = require("../../../helpers/sendMailer");
-const resetPassword_1 = require("./resetPassword");
-const Auth_helper_1 = require("./Auth.helper");
-const sendMail_1 = require("../../../helpers/mail/sendMail");
 const otp_template_1 = require("../../../helpers/mail/otp-template");
+const sendMail_1 = require("../../../helpers/mail/sendMail");
+const sendMailer_1 = require("../../../helpers/sendMailer");
+const Auth_helper_1 = require("./Auth.helper");
+const resetPassword_1 = require("./resetPassword");
 const signUpUserDB = (userData) => __awaiter(void 0, void 0, void 0, function* () {
     const isExistUser = yield prisma_1.default.user.findUnique({
         where: {

@@ -17,11 +17,15 @@ const app_1 = __importDefault(require("./app"));
 const config_1 = __importDefault(require("./config"));
 const logger_1 = require("./shared/logger");
 const prisma_1 = __importDefault(require("./shared/prisma"));
+const runFileUploadFolder_1 = require("./utils/runFileUploadFolder");
+const seedSuperAdmin_1 = require("./utils/seedSuperAdmin");
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const server = app_1.default.listen(config_1.default.port, () => {
             console.log(`Server running on port http://localhost:${config_1.default.port}`.green.underline
                 .bold);
+            (0, runFileUploadFolder_1.createDirectories)();
+            (0, seedSuperAdmin_1.seedSuperAdmin)();
         });
         const exitHandler = (error) => {
             if (server) {

@@ -23,6 +23,7 @@
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.13",
     "@types/express": "^5.0.0",
+    "@types/multer-s3": "^3.0.3",
     "@types/nodemailer": "^6.4.15",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.7",
@@ -38,6 +39,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.709.0",
     "@prisma/client": "^6.0.1",
     "@types/bcrypt": "^5.0.0",
     "@types/cookie-parser": "^1.4.3",
@@ -58,6 +60,7 @@
     "i": "^0.3.7",
     "jsonwebtoken": "^9.0.0",
     "multer": "^1.4.5-lts.1",
+    "multer-s3": "^3.0.1",
     "nodemailer": "^6.9.14",
     "npm": "^10.9.2",
     "prisma": "^6.0.1",

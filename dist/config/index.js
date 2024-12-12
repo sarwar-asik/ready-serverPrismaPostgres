@@ -10,6 +10,10 @@ dotenv_1.default.config({ path: path_1.default.join(process.cwd(), '.env') });
 exports.default = {
     env: process.env.NODE_ENV,
     port: process.env.PORT,
+    superAdmin: {
+        email: process.env.SUPER_ADMIN_EMAIL,
+        password: process.env.SUPER_ADMIN_PASSWORD
+    },
     database_url: process.env.DATABASE_URL,
     server_name: process.env.SERVER_NAME,
     default_student_pass: process.env.DEFAULT_STUDENT_PASS,

@@ -20,36 +20,47 @@ const prisma_1 = __importDefault(require("../../shared/prisma"));
 const auth = (...requiredRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         //get authorization token
-        const token = req.headers.authorization;
-        if (!token) {
+        const tokenWithBearer = req.headers.authorization;
+        console.log(req.headers, 'token');
+        if (!tokenWithBearer) {
             throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized');
         }
         // verify token
-        let verifiedUser = null;
-        verifiedUser = jwtHelpers_1.jwtHelpers.verifyToken(token, config_1.default.jwt.secret);
-        req.user = verifiedUser; // role  , userid
-        // role diye guard korar jnno
-        if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
-            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'Forbidden');
-        }
-        const existUser = yield prisma_1.default.user.findUnique({
-            where: {
-                id: verifiedUser.id,
-            },
-        });
-        if (!existUser) {
-            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist');
-        }
-        if (!existUser.is_active) {
-            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User is not active');
-        }
-        if (!existUser.is_verified) {
-            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User is not verified');
-        }
-        const changeTime = existUser === null || existUser === void 0 ? void 0 : existUser.pass_changed_at;
-        const iatTime = verifiedUser === null || verifiedUser === void 0 ? void 0 : verifiedUser.iat;
-        if (changeTime && iatTime && changeTime > iatTime) {
-            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'Password changed after login');
+        if (tokenWithBearer && tokenWithBearer.startsWith('Bearer')) {
+            const token = tokenWithBearer.split(' ')[1];
+            let verifiedUser = null;
+            verifiedUser = jwtHelpers_1.jwtHelpers.verifyToken(token, config_1.default.jwt.secret);
+            req.user = verifiedUser; // role  , userid
+            // role diye guard korar jnno
+            if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
+                throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'Forbidden');
+            }
+            const existUser = yield prisma_1.default.user.findUnique({
+                where: {
+                    id: verifiedUser.id,
+                },
+            });
+            if (!existUser) {
+                throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist');
+            }
+            if (!existUser.is_active) {
+                throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User is not active');
+            }
+            if (!existUser.is_verified) {
+                throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User is not verified');
+            }
+            const changeTime = existUser === null || existUser === void 0 ? void 0 : existUser.pass_changed_at;
+            const iatTime = verifiedUser === null || verifiedUser === void 0 ? void 0 : verifiedUser.iat;
+            console.log(changeTime, 'changeTime');
+            console.log(iatTime, 'iatTime');
+            if (changeTime && iatTime) {
+                // Convert changeTime to a UNIX timestamp
+                const changeTimeUnix = Math.floor(new Date(changeTime).getTime() / 1000); // Convert to seconds
+                console.log(changeTimeUnix, 'changeTimeUnix');
+                if (changeTimeUnix > iatTime) {
+                    throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'Password changed after login');
+                }
+            }
         }
         next();
     }

@@ -9,7 +9,7 @@ const path_1 = __importDefault(require("path"));
 const winston_1 = require("winston");
 const winston_daily_rotate_file_1 = __importDefault(require("winston-daily-rotate-file"));
 const { combine, timestamp, label, printf } = winston_1.format;
-//Customm Log Format
+//Custom Log Format
 const myFormat = printf(({ level, message, label, timestamp }) => {
     const date = new Date(timestamp);
     const hour = date.getHours();

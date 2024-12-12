@@ -56,28 +56,50 @@ Ready Backend is a TypeScript-based Express.js application that provides a secur
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-
 #------Server
 NODE_ENV=development
 PORT=5000
-DATABASE_URL="postgresql://username:password@localhost:5432/dbname"
+SERVER_NAME="Ready Backend"
 
-#------Authentication
-JWT_SECRET=your_jwt_secret
+#------Database
+DATABASE_URL="postgresql://postgres:pass_your@127.0.0.1:5432/map_points_db?schema=public"
+SHADOW_DATABASE_URL='postgresql://postgres:pass_your@127.0.0.1:5432/map_points_db?schema=public'
+
+#----------Security
+BCRYPT_SALT_ROUNDS=12
+JWT_SECRET=your-secret
 JWT_EXPIRES_IN=1d
-JWT_REFRESH_SECRET=your_refresh_secret
-JWT_REFRESH_EXPIRES_IN=30d
+JWT_REFRESH_SECRET=very-refresh-secret
+JWT_REFRESH_EXPIRES_IN=365d
+SERVER_URL='http://localhost:5001'
 
-#------Mail sending
-SMTP_HOST=smtp.gmail.com
+#---------Cloudinary
+CLOUDINARY_CLOUD_NAME="sadfasdfasd"
+CLOUDINARY_API_KEY="234512342314"
+CLOUDINARY_API_SECRET="1234342345"
+
+#---------AWS S3
+S3_BUCKET="ready-backend"
+S3_REGION="ap-southeast-1"
+S3_ACCESS_KEY_ID="EXAMPLEKEYID"
+S3_SECRET_ACCESS_KEY="EXAMPLE_example"
+
+#---------SMTP
+FRONTEND_URL = ""
+# SMTP_USER=your-email@gmail.com
+# SMTP_PASS=your-app-password
+
+SMTP_HOST='smtp.gmail.com'
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
+SMTP_USER='sarwarasik@gmail.com'
+SMTP_PASS='example example example'
 
-#------Super Admin
-SUPER_ADMIN_EMAIL=your-admin@email.com
-SUPER_ADMIN_PASSWORD=your-admin-password
+
+#---------Default Password
+SUPER_ADMIN_EMAIL=admin@gmail.com
+SUPER_ADMIN_PASSWORD=adminPass
+
 
 
 ```

@@ -3,9 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.limiterRate = exports.compressionOptions = void 0;
+exports.helmetConfig = exports.limiterRate = exports.compressionOptions = void 0;
 const compression_1 = __importDefault(require("compression"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
+const helmet_1 = __importDefault(require("helmet"));
+require("colors");
 //!  compressor
 exports.compressionOptions = {
     threshold: 2048, //! Only compress responses larger than 1KB
@@ -54,4 +56,42 @@ exports.limiterRate = (0, express_rate_limit_1.default)({
         console.log(`from ${ip} | Total: ${hitCounts[ip].count} | First: ${hitCounts[ip].firstHit.toLocaleString()} | Last: ${hitCounts[ip].lastHit.toLocaleTimeString()} on ${hitCounts[ip].pathCounts[path]} on ${path} | ${hitCounts[ip].pathCounts[path]}`.grey);
         return ip;
     },
+});
+// !helmet config
+exports.helmetConfig = (0, helmet_1.default)({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            //   scriptSrc: ["'self'", "'unsafe-inline'", "example.com"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", 'data:'],
+            connectSrc: ["'self'"],
+            fontSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            frameSrc: ["'self'"],
+            upgradeInsecureRequests: [],
+        },
+    },
+    crossOriginEmbedderPolicy: true,
+    crossOriginOpenerPolicy: { policy: 'same-origin' },
+    crossOriginResourcePolicy: { policy: 'same-origin' },
+    dnsPrefetchControl: { allow: false },
+    //   expectCt: {
+    //     enforce: true,
+    //     maxAge: 86400, // 1 day in seconds
+    //   },
+    frameguard: { action: 'deny' },
+    hsts: {
+        maxAge: 63072000, // 2 years in seconds
+        includeSubDomains: true,
+        preload: true,
+    },
+    hidePoweredBy: true,
+    ieNoOpen: true,
+    noSniff: true,
+    permittedCrossDomainPolicies: { permittedPolicies: 'none' },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    xssFilter: true,
 });
