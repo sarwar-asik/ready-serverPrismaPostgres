@@ -15,6 +15,7 @@ const prismaToSwaggerType = (prismaType: string): { type: string; format?: strin
 };
 
 const parseFieldAttributes = (attributes: string) => {
+  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result: any = {};
 

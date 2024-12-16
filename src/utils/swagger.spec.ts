@@ -7,20 +7,27 @@ const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: ` ${config.server_name} Backend`,
+      title: `${config.server_name} Backend`,
       version: '1.0.0',
-      description: `Api Design of  ${config.server_name}`,
+      description: `Api Design of ${config.server_name}`,
       contact: {
-        name: "Sarwar Hossain [Spark Tech Agency]",
-        email: "sarwarasik@gmail.com",
-        url: "https://www.linkedin.com/in/sarwar-asik/"
+        name: 'Sarwar Hossain',
+        email: 'sarwarasik@gmail.com',
+        url: 'https://www.linkedin.com/in/sarwar-asik/',
       },
       license: {
-        name: 'STA',
+        name: 'SparkTech',
         url: 'https://sparktech.agency/',
       },
     },
-    // !component part
+    servers: [
+      {
+        url: "http://localhost:5003",
+      },
+      {
+        url: "http://54.157.71.177:5003",
+      },
+    ],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -30,29 +37,17 @@ const options: swaggerJsdoc.Options = {
         },
       },
       schemas: swaggerDefinition,
-      response: {
-        description: 'Access token is missing or invalid',
-        content: {
-          'application/json': {
-            example: { message: 'Unauthorized' },
-          },
-        },
-      }
     },
-    // !security part
     security: [
       {
         bearerAuth: [],
       },
     ],
-    // !tags part
     tags: swaggerTags,
-
   },
-  apis: [
-    path.join(__dirname, '../app/modules/**/*.ts'),
-  ],
+  apis: [path.join(__dirname, '../app/modules/**/*.ts')],
 };
+
 
 // ! swagger UI customization sections
 export const swaggerUiOptions = {

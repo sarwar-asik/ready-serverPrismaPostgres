@@ -134,6 +134,11 @@
             "date": 1733824835634,
             "name": "C:\\Users\\sarwa\\WEB\\JOB\\Sparktech\\Projects\\MapPoint\\map-points-backend\\logs\\winston\\errors\\phu-2024-10-12-16-error.log",
             "hash": "754a9601e446c2ebe6673257f24204df013fc4549d5934ac49a2dae387543c1c"
+        },
+        {
+            "date": 1734000356096,
+            "name": "C:\\Users\\sarwa\\WEB\\JOB\\Sparktech\\Projects\\MapPoint\\map-points-backend\\logs\\winston\\errors\\phu-2024-12-12-16-error.log",
+            "hash": "3c58a09f51ea1c7e4e7c03a54b240660706582aa2735b6730fe4f0c60f95e58e"
         }
     ],
     "hashType": "sha256"
