@@ -1,10 +1,10 @@
-# 🗺️ Ready Backend
+# 🗺️ Ready PostgreSQL Backend
 
 A advance backend boilerplate with modern secure high demand features
 
 ## 🚀 Overview
 
-Ready Backend is a TypeScript-based Express.js application that provides a secure and scalable API. It uses Prisma as an ORM and implements various security features and optimizations.
+Ready PostgreSQL Backend is a TypeScript-based Express.js application that provides a secure and scalable API. It uses Prisma as an ORM and implements various security features and optimizations.
 
 ## 🛠️ Tech Stack
 
