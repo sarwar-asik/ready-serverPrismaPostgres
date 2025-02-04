@@ -1,7 +1,7 @@
 import path from 'path';
 import swaggerJsdoc from 'swagger-jsdoc';
 import config from '../config';
-import {  swaggerDefinition, swaggerTags } from './swagger.utils';
+import { swaggerDefinition, swaggerTags } from './swagger.utils';
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -45,7 +45,16 @@ const options: swaggerJsdoc.Options = {
     ],
     tags: swaggerTags,
   },
-  apis: [path.join(__dirname, '../app/modules/**/*.ts')],
+  // apis: [path.join(__dirname, '../app/modules/**/*.ts')],
+  // apis: [path.join(__dirname, '../app/modules/**/*.ts'),path.join(__dirname, '../../dist/app/modules/**/*.js')],
+  
+  apis: [
+    path.join(__dirname, '../**/*.ts'),
+    path.join(__dirname, '../**/*.js'),
+    path.join(__dirname, '../../dist/app/modules/**/*.ts'),
+    path.join(__dirname, '../../dist/app/modules/**/*.js')
+  ],
+
 };
 
 

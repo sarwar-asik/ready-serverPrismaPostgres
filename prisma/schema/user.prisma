@@ -16,6 +16,7 @@ model User {
   fcm_token          String?
   app_id             String?
   is_social          Boolean   @default(false)
+  lottitude          String?   
   address            String?
   location           Json?      @default("{\"long\": \"\", \"lat\": \"\", \"street\": \"\"}")
   date_of_birth      String?
